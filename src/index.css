@@ -1,0 +1,539 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Syne:wght@600;700;800&family=JetBrains+Mono:wght@400;700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Prata&family=Orbitron:wght@400..900&display=swap');
+
+:root {
+  --theme-primary: #E06B6B;
+  --theme-secondary: #FFE3E1;
+  --theme-glow: rgba(224,107,107,0.15);
+  --theme-text: #E06B6B;
+  --theme-font: 'Syne', 'Inter', sans-serif;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background-color: #FFF5E4;
+  color: #000000;
+  font-family: var(--theme-font), 'Inter', sans-serif;
+  font-size: 1.08rem;
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root { min-height: 100vh; }
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: #FFF5E4; }
+::-webkit-scrollbar-thumb {
+  background: var(--theme-primary);
+  border-radius: 8px;
+  border: 2px solid #FFF5E4;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--theme-primary); opacity: 0.8; }
+
+@layer components {
+  .glass-panel {
+    position: relative;
+    backdrop-filter: blur(12px);
+    background: rgba(255, 245, 228, 0.82);
+    border: 2px solid rgba(255, 148, 148, 0.35);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(74,53,53,0.06), inset 0 1px 0 rgba(255,255,255,0.8);
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, border-color 0.2s ease;
+  }
+  .glass-panel:hover {
+    transform: translateY(-2px);
+    border-color: #FF9494;
+    box-shadow: 0 15px 30px rgba(255,148,148,0.12), inset 0 1px 0 rgba(255,255,255,0.9);
+  }
+  .glass-panel::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.5) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .glass-panel > * { position: relative; z-index: 1; }
+
+  .btn-crazy {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.02em;
+    color: #FFF5E4;
+    background: linear-gradient(135deg, #FF9494, #E06B6B);
+    border: 1px solid rgba(74, 53, 53, 0.1);
+    border-radius: 10px;
+    padding: 10px 22px;
+    box-shadow: 0 4px 14px rgba(255, 148, 148, 0.3);
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .btn-crazy:hover {
+    transform: translateY(-1.5px);
+    box-shadow: 0 6px 20px rgba(255, 148, 148, 0.45);
+  }
+  .btn-crazy:active {
+    transform: translateY(0.5px);
+    box-shadow: 0 2px 8px rgba(255, 148, 148, 0.25);
+  }
+
+  .rainbow-number {
+    background: linear-gradient(135deg, #FF9494, #AB74C7, #6AB482, #E09255, #E05A47);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: rainbow-flow 3s linear infinite;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 900;
+  }
+
+  .crazy-title {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+  }
+
+  .pop-card {
+    border: 1px solid rgba(255, 148, 148, 0.25);
+    box-shadow: 0 10px 30px rgba(74, 53, 53, 0.04), 0 1px 3px rgba(74, 53, 53, 0.02);
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .pop-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 20px 40px rgba(255, 148, 148, 0.12), 0 1px 6px rgba(74, 53, 53, 0.03);
+    border-color: rgba(255, 148, 148, 0.45);
+  }
+}
+
+.rainbow-bar {
+  background: linear-gradient(90deg, #FF9494, #FFD1D1, #AB74C7, #6AB482, #E09255, #E05A47, #FF9494);
+  background-size: 300% auto;
+  animation: rainbow-flow 3s linear infinite;
+}
+
+@keyframes rainbow-flow {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+@keyframes glitch {
+  0%,100% { text-shadow: 1px 1px 0 rgba(255,148,148,0.15); }
+  50% { text-shadow: -1px -1px 0 rgba(171,116,199,0.15); }
+}
+
+@keyframes wiggle {
+  0%,100% { transform: rotate(-0.5deg) scale(1); }
+  50% { transform: rotate(0.5deg) scale(1.01); }
+}
+
+@keyframes float {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+@keyframes pop-in {
+  0% { transform: scale(0.97); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes bounce-crazy {
+  0%,100% { transform: translateY(0) scale(1); }
+  30% { transform: translateY(-10px) scale(1.1); }
+  60% { transform: translateY(-5px) scale(1.05); }
+}
+
+@keyframes neon-pulse {
+  0%,100% { filter: drop-shadow(0 0 8px #FF9494) drop-shadow(0 0 20px #FF9494); }
+  50% { filter: drop-shadow(0 0 4px #AB74C7) drop-shadow(0 0 15px #AB74C7); }
+}
+
+@keyframes slide-up {
+  0% { transform: translateY(30px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+.cyber-bg {
+  background: radial-gradient(circle at 30% 20%, #FFE3E1 0%, #FFF5E4 60%);
+  position: relative;
+}
+.cyber-bg::before {
+  content: '';
+  position: fixed;
+  top: -50%; left: -50%; right: -50%; bottom: -50%;
+  background:
+    radial-gradient(ellipse at 20% 20%, rgba(255,148,148,0.12) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(171,116,199,0.1) 0%, transparent 50%),
+    radial-gradient(ellipse at 60% 10%, rgba(106,180,130,0.07) 0%, transparent 40%);
+  pointer-events: none;
+  z-index: 0;
+}
+.cyber-bg::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,148,148,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,148,148,0.04) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+  z-index: 0;
+  animation: grid-drift 30s linear infinite;
+}
+@keyframes grid-drift {
+  0% { background-position: 0 0; }
+  100% { background-position: 120px 60px; }
+}
+
+/* --- LIGHT MODE TEXT OVERRIDES --- */
+.text-white { color: #4A3535; }
+.text-slate-100 { color: #3C2A2A; }
+.text-slate-200 { color: #3C2A2A; }
+.text-slate-300 { color: #4A3535; }
+.text-slate-400 { color: #6C5454; }
+.text-slate-500 { color: #5C4343; }
+.text-slate-600 { color: #4A3535; }
+
+/* Keep white text white inside gradient backgrounds / buttons */
+.bg-teal-gradient .text-white,
+.bg-red-gradient .text-white,
+.bg-green-gradient .text-white,
+.bg-amber-gradient .text-white,
+.bg-purple-gradient .text-white,
+button .text-white,
+.btn-crazy,
+.text-white-force { color: #FFF5E4 !important; }
+
+/* Background overrides for light mode */
+.glass-panel { background: rgba(255,245,228,0.82) !important; border-color: rgba(255,148,148,0.35) !important; }
+input::placeholder { color: #8A6E6E !important; opacity: 0.7; }
+
+.bg-cyber-blue\/50 { background-color: rgba(255,209,209,0.4) !important; }
+.bg-cyber-blue\/30 { background-color: rgba(255,209,209,0.25) !important; }
+.bg-cyber-blue\/40 { background-color: rgba(255,209,209,0.3) !important; }
+.bg-cyber-teal\/15 { background-color: rgba(255,148,148,0.12) !important; }
+.bg-cyber-dark\/97 { background-color: rgba(255,245,228,0.97) !important; }
+.bg-cyber-green\/10 { background-color: rgba(106,180,130,0.1) !important; }
+.bg-cyber-red\/10 { background-color: rgba(224,90,71,0.1) !important; }
+.bg-cyber-amber\/10 { background-color: rgba(224,146,85,0.1) !important; }
+.bg-cyber-purple\/20 { background-color: rgba(171,116,199,0.15) !important; }
+.bg-cyber-purple\/10 { background-color: rgba(171,116,199,0.08) !important; }
+.bg-black\/20 { background-color: rgba(255,255,255,0.4) !important; }
+.bg-black\/30 { background-color: rgba(255,255,255,0.5) !important; }
+.bg-white\/5 { background-color: rgba(255,148,148,0.08) !important; }
+
+.border-glass-border { border-color: rgba(255,148,148,0.3) !important; }
+
+/* Fun hover effects for section headers */
+h1:hover { animation: wiggle 0.4s ease-in-out; }
+
+/* Emoji bounce animation */
+.emoji-bounce {
+  display: inline-block;
+  animation: bounce-crazy 1s ease-in-out infinite;
+}
+
+/* Stagger delays for lists */
+.stagger-1 { animation-delay: 0.1s; }
+.stagger-2 { animation-delay: 0.2s; }
+.stagger-3 { animation-delay: 0.3s; }
+.stagger-4 { animation-delay: 0.4s; }
+.stagger-5 { animation-delay: 0.5s; }
+
+/* Custom Theme Dynamic Utilities */
+.theme-text-color {
+  color: var(--theme-primary) !important;
+}
+.theme-border-color {
+  border-color: var(--theme-primary) !important;
+}
+.theme-bg-color {
+  background-color: var(--theme-primary) !important;
+}
+.theme-bg-glow {
+  background-color: var(--theme-glow) !important;
+}
+.theme-scrollbar {
+  scrollbar-color: var(--theme-primary) #FFF5E4;
+}
+.theme-badge {
+  background-color: var(--theme-glow);
+  color: var(--theme-primary);
+  border-color: var(--theme-primary);
+}
+
+/* ═══════════════════════════════════════════════
+   EXPRESSIVE TYPOGRAPHY — Page Identity System
+   ═══════════════════════════════════════════════ */
+
+/* HOME PAGE — Chrome gradient + ultra-bold condensed */
+.hero-title-word {
+  font-family: 'Syne', sans-serif;
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+  display: inline-block;
+}
+.hero-title-gradient {
+  background: linear-gradient(135deg, #E06B6B 0%, #AB74C7 40%, #6AB482 70%, #E09255 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 300% 300%;
+  animation: hero-gradient-shift 4s ease infinite;
+}
+@keyframes hero-gradient-shift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.hero-title-outline {
+  -webkit-text-stroke: 2px #4A3535;
+  color: transparent;
+}
+.hero-sub-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  opacity: 0.65;
+}
+
+/* LOGIN PAGE — Condensed oblique, architecturally rigid */
+.login-title {
+  font-family: 'Montserrat', 'Syne', sans-serif;
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+.login-badge-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+}
+.login-step-heading {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.015em;
+  font-style: italic;
+}
+
+/* ORGANIZER PAGE — Orbitron telemetry command style */
+.cmd-title {
+  font-family: 'Orbitron', 'Syne', sans-serif;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-shadow: 0 0 20px var(--theme-glow), 0 0 40px var(--theme-glow);
+}
+.cmd-section-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  font-size: 0.6rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  opacity: 0.75;
+}
+
+/* VOLUNTEER PAGE — Prata editorial magazine style */
+.vol-title {
+  font-family: 'Playfair Display', 'Prata', serif;
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  line-height: 1.05;
+}
+.vol-section-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+/* FAN PAGE — Outfit party-stadium energy */
+.fan-title {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  background: linear-gradient(90deg, var(--theme-primary), var(--theme-text));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.fan-section-label {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+/* Shared neon glow text utility */
+.neon-text {
+  text-shadow: 0 0 8px var(--theme-primary), 0 0 24px var(--theme-glow);
+}
+
+/* Wide tracked monospace for stat values */
+.stat-value-display {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  line-height: 1;
+}
+
+/* ═══════════════════════════════════════════════════
+   PAGE-SCOPED FONT OVERRIDES — Professional Takeover
+   Using clean, modern, high-end geometric sans-serif
+   typography for absolute readability and elite design.
+   ═══════════════════════════════════════════════════ */
+
+:root {
+  --theme-font: 'Outfit', 'Inter', sans-serif !important;
+}
+
+/* ── COMMAND CENTER (Organizer) ── */
+[data-page="organizer"] .font-display,
+[data-page="organizer"] h1,
+[data-page="organizer"] h2,
+[data-page="organizer"] h3,
+[data-page="organizer"] .cmd-title {
+  font-family: 'Outfit', sans-serif !important;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+[data-page="organizer"] .font-body {
+  font-family: 'Inter', sans-serif !important;
+  font-weight: 400;
+}
+[data-page="organizer"] .font-mono {
+  font-family: 'JetBrains Mono', monospace !important;
+  letter-spacing: 0.02em;
+}
+
+/* ── VOLUNTEER COPILOT ── */
+[data-page="volunteer"] .font-display,
+[data-page="volunteer"] h1,
+[data-page="volunteer"] h2,
+[data-page="volunteer"] h3,
+[data-page="volunteer"] .vol-title {
+  font-family: 'Outfit', sans-serif !important;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+[data-page="volunteer"] .font-body {
+  font-family: 'Inter', sans-serif !important;
+  font-weight: 400;
+}
+[data-page="volunteer"] .font-mono {
+  font-family: 'JetBrains Mono', monospace !important;
+  letter-spacing: 0.02em;
+}
+
+/* ── FAN EXPERIENCE ── */
+[data-page="fan"] .font-display,
+[data-page="fan"] h1,
+[data-page="fan"] h2,
+[data-page="fan"] h3,
+[data-page="fan"] .fan-title {
+  font-family: 'Outfit', sans-serif !important;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+[data-page="fan"] .font-body {
+  font-family: 'Inter', sans-serif !important;
+  font-weight: 400;
+}
+[data-page="fan"] .font-mono {
+  font-family: 'JetBrains Mono', monospace !important;
+  letter-spacing: 0.02em;
+}
+
+/* ── HOME PAGE ── */
+.home-page .font-display,
+.home-page h1,
+.home-page h2,
+.home-page h3 {
+  font-family: 'Outfit', sans-serif !important;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.home-page .font-body {
+  font-family: 'Inter', sans-serif !important;
+  font-weight: 400;
+}
+.home-page .font-mono {
+  font-family: 'JetBrains Mono', monospace !important;
+  letter-spacing: 0.04em;
+}
+.home-page p.font-display {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-weight: 700;
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+/* ── LOGIN PAGE ── */
+.login-page .font-display,
+.login-page h2,
+.login-page h3 {
+  font-family: 'Outfit', sans-serif !important;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.login-page .font-body {
+  font-family: 'Inter', sans-serif !important;
+  font-weight: 400;
+}
+.login-page .font-mono,
+.login-page label {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.login-page select,
+.login-page input {
+  font-family: 'Inter', sans-serif !important;
+  font-weight: 400;
+}
+
+/* ── STAT VALUE NUMBERS — Monospace punchy across all pages ── */
+[data-page="organizer"] .text-2xl.font-bold,
+[data-page="volunteer"] .text-xl.font-bold,
+[data-page="fan"] .text-2xl.font-bold,
+[data-page="fan"] .text-xl.font-bold {
+  font-family: 'JetBrains Mono', monospace !important;
+  letter-spacing: 0.01em;
+}
+
+/* ── CARD LABEL TAGS — Wide spaced tracking across all pages ── */
+[data-page="organizer"] .tracking-widest,
+[data-page="volunteer"] .tracking-widest,
+[data-page="fan"] .tracking-widest {
+  font-family: 'JetBrains Mono', monospace !important;
+  letter-spacing: 0.18em !important;
+  font-weight: 600;
+  text-transform: uppercase;
+}
