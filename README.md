@@ -1,164 +1,94 @@
-# ⚡ StadiumSync 2026
-### AI-Powered FIFA World Cup Crowd Intelligence Platform
+# STADIAPULSE 
+### My AI Project for Stadium Operations
 
-![StadiumSync](https://img.shields.io/badge/FIFA%20World%20Cup-2026-teal?style=for-the-badge)
-![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react)
-![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript)
-![Tailwind](https://img.shields.io/badge/Tailwind-CSS%203-38BDF8?style=for-the-badge&logo=tailwindcss)
-![Gemini](https://img.shields.io/badge/Gemini-1.5%20Flash-8E44AD?style=for-the-badge)
+🌐 **Live Demo:** https://stadiapulse.vercel.app/
 
----
+So I built this project to explore how AI can actually help with real-world crowd management at major events like the FIFA World Cup. The idea came from thinking about all the chaos that happens at big stadiums — gates bottleneck, volunteers don't know what to say to fans in different languages, and nobody really has a good way to make sense of what's happening in real-time.
 
-## 🎯 Overview
+## The Idea
 
-StadiumSync 2026 is a full-stack AI web application demonstrating **Explainable AI (XAI)** for FIFA World Cup 2026 operations. It connects three key personas — **Organizers**, **Volunteers**, and **Fans** — through real-time telemetry analysis, multilingual assistance, and AI-driven crowd management.
+I wanted to build something that would work for three different types of people at a stadium:
 
-### Three Personas, One Platform
+- **Organizers** (the people running the show) — they need to see what's actually happening in the stadium and understand where problems are going to pop up before they do
+- **Fans** (everyone else) — they just want to know how to get to their seat without getting lost or stuck in a crazy line
 
-| Persona | View | Key Features |
-|---|---|---|
-| 🏛️ **Organizer** | Command Center | Live telemetry, AI crowd analysis, bottleneck detection, 3-step strategy |
-| 🦺 **Volunteer** | Field Operations | Live alert feed, AI translation to 8 languages, cultural notes |
-| 🎟️ **Fan** | Fan Experience | AI route generation, seat navigation, bottleneck avoidance |
+## What It Actually Does
 
----
+The whole thing runs on Google's Gemini AI to handle the smart parts. Each person role gets their own view of the stadium data, and the AI helps them make better decisions. I built in multi-language support (8 languages!) for volunteers, real-time crowd analysis for organizers, and turn-by-turn navigation for fans.
 
-## 🚀 Quick Start
 
-### Prerequisites
-- Node.js ≥ 18.0
-- A Google Gemini API key (free at [aistudio.google.com](https://aistudio.google.com))
-
-### Installation
+#
 
 ```bash
-# 1. Clone / navigate to the project
+# Get the project running
 cd stadiumsync-2026
-
-# 2. Install dependencies
 npm install
 
-# 3. Configure environment
+# Set up your credentials
 cp .env.example .env
-# Edit .env and add your key:
-# VITE_GEMINI_API_KEY=your_actual_key_here
+# Then edit .env and add:
+# VITE_GEMINI_API_KEY=your_gemini_api_key_here
+# VITE_FIREBASE_API_KEY=your_firebase_api_key_here
+# VITE_FIREBASE_PROJECT_ID=your_firebase_project_id
+# VITE_FIREBASE_AUTH_DOMAIN=your_firebase_auth_domain
+# VITE_FIREBASE_DATABASE_URL=your_firebase_database_url
+# VITE_FIREBASE_STORAGE_BUCKET=your_firebase_storage_bucket
+# VITE_FIREBASE_MESSAGING_SENDER_ID=your_firebase_messaging_sender_id
+# VITE_FIREBASE_APP_ID=your_firebase_app_id
 
-# 4. Start development server
+# Start it up
 npm run dev
 ```
 
-Then open [http://localhost:5173](http://localhost:5173)
 
----
+## How It's Built
 
-## 🏗️ Architecture
+The tech stack is pretty straightforward:
+- **React + Vite** — I picked Vite because the dev server is insanely fast
+- **TypeScript** — Caught a lot of bugs before they became problems
+- **Tailwind CSS** — Made styling the cyber dashboard theme way easier
+- **Zustand** — Super lightweight state management, didn't need Redux
+- **Gemini API** — All the AI smarts happen here
 
-```
-src/
-├── components/
-│   ├── ui/
-│   │   ├── GlassPanel.tsx         # Glassmorphism container with glow variants
-│   │   ├── SkeletonLoader.tsx     # Shimmer loading states
-│   │   └── StatusBadge.tsx        # Severity/status indicator badges
-│   ├── layout/
-│   │   └── NavBar.tsx             # Role switcher + live status header
-│   ├── organizer/
-│   │   ├── TelemetryGrid.tsx      # Gate cards, facility rows, security zones
-│   │   └── AIAnalysisPanel.tsx    # XAI reasoning display + strategy steps
-│   ├── volunteer/
-│   │   ├── AlertFeed.tsx          # AI alert cards with severity coding
-│   │   └── TranslationAssistant.tsx  # 8-language AI translation with cultural notes
-│   └── fan/
-│       └── FanRouteCard.tsx       # Seat input + AI turn-by-turn navigation
-├── data/
-│   └── mockData.ts                # Synthetic stadium telemetry (8 gates, 9 facilities, 5 security zones)
-├── pages/
-│   ├── OrganizerPage.tsx
-│   ├── VolunteerPage.tsx
-│   └── FanPage.tsx
-├── services/
-│   └── geminiService.ts           # Gemini API + exponential backoff (429 handling)
-├── store/
-│   └── useAppStore.ts             # Zustand global state
-└── types/
-    └── index.ts                   # Shared TypeScript interfaces
-```
 
----
+## The Parts That Actually Matter
 
-## 🤖 AI Features
+**Real-time Crowd Analysis** — The organizer dashboard shows live data from 8 stadium gates, 9 facilities (restrooms, concessions, medical), and 5 security zones. The AI analyzes all this and suggests what to do next.
 
-### Exponential Backoff (Rate Limit Handling)
-```typescript
-// Automatically retries on 429 errors with exponential backoff
-const withExponentialBackoff = async (fn, retries = 5, delayMs = 1000) => {
-  try { return await fn(); }
-  catch (error) {
-    if (isRateLimit(error) && retries > 0) {
-      await sleep(Math.min(delayMs * 2 + jitter, 30000));
-      return withExponentialBackoff(fn, retries - 1, delayMs * 2);
-    }
-    throw error;
-  }
-};
-```
+**Translation & Cultural Awareness** — Volunteers can ask the app to translate alerts to 8 different languages, and it adds cultural context so nothing gets lost in translation.
 
-### 4 Gemini Prompts
-1. **`analyzeCrowd()`** — Security director persona, bottleneck identification, 3-step XAI strategy
-2. **`generateAlerts()`** — Severity-coded volunteer action alerts from telemetry
-3. **`translateAlert()`** — Culturally-aware translation to 8 languages
-4. **`generateFanRoute()`** — Personalized turn-by-turn routing avoiding bottlenecks
+**Smart Routing** — Fans enter their seat location and the app generates turn-by-turn directions while trying to avoid bottlenecks and congestion.
 
----
+**Handling API Rate Limits** — This was a pain to solve. The Gemini API has rate limits, so I built in exponential backoff that automatically retries if we hit a 429 error. It's been solid so far.
 
-## 🎨 Design System
+## Challenges I Ran Into
 
-| Token | Value | Usage |
-|---|---|---|
-| `cyber-dark` | `#020B18` | Page background |
-| `cyber-teal` | `#00D4C8` | Primary accent, CTAs |
-| `cyber-green` | `#00FF87` | Success, normal status |
-| `cyber-red` | `#FF3B5C` | Critical alerts |
-| `cyber-amber` | `#FFB800` | Warnings |
-| `cyber-purple` | `#7B61FF` | Translation, AI features |
-| Font: Display | Orbitron | Headers, labels |
-| Font: Body | Exo 2 | Paragraphs, descriptions |
-| Font: Mono | JetBrains Mono | Data, codes, timestamps |
+**API Rate Limiting** — This was my biggest headache. Gemini has pretty strict rate limits, and I kept hitting them during testing. I ended up implementing exponential backoff with jitter, which actually worked really well. Retrying requests with increasing delays instead of just hammering the API was the key.
 
----
+**Making the AI Prompts Do What I Wanted** — Prompt engineering is harder than it sounds. Getting the AI to understand stadium context and generate useful, actionable insights took a lot of trial and error. I had to be very specific about what kind of output I wanted.
 
-## 📊 Mock Telemetry Data
+**Handling 8-Language Translations Accurately** — Translation systems can be weird. I realized I needed to give the AI context about culture and local practices, not just word-for-word translations. A volunteer saying "please move away from the gate" needs different phrasing in different places.
 
-The app ships with rich synthetic data for **MetLife Stadium** (USA vs Brazil):
+**State Management** — I initially overthought this. Zustand ended up being perfect because it's simple but powerful enough for what I needed without the boilerplate of Redux.
 
-- **8 Gates**: A (85%), B (20%), C (85%), D (83%), E (99% — CRITICAL), F (40%), G (85%), H (20%)
-- **9 Facilities**: Restrooms (90%/65%/30%), Concessions, Medical, Parking
-- **5 Security Zones**: North (orange risk), South (red risk), East (yellow), West (green), VIP (green)
-- **Live variance**: Telemetry auto-updates every 30s with realistic drift simulation
+## What I'm Happy With
 
----
+The organizer dashboard turned out pretty slick. Showing real-time telemetry in a way that's actually scannable was tough, but I think the layout works.
 
-## 🔐 Environment Variables
+The volunteer translation feature actually feels useful. Adding cultural notes to translations was something I added kind of late, but it makes a real difference.
 
-```env
-# .env (never commit this file)
-VITE_GEMINI_API_KEY=your_gemini_api_key_here
-```
+The whole app feels responsive. Vite made development incredibly fast, which meant I could iterate a lot.
 
-The app will show a descriptive error if the key is missing — no hard-coded keys anywhere in the codebase.
+## What I'd Change If I Had More Time
 
----
+- Better error handling and recovery when the API goes down
+- A real database instead of mock data (right now everything resets on refresh)
+- More sophisticated congestion prediction — this could be way smarter
+- Better testing coverage (I know this is important, didn't get as far as I wanted)
+- Mobile responsiveness — right now it's pretty desktop-focused
 
-## 🛠️ Tech Stack
+## Running It For Real
 
-- **React 18** + **Vite 5** — Lightning-fast dev experience
-- **TypeScript 5** — Full type safety
-- **Tailwind CSS 3** — Utility-first with custom cyber theme
-- **Framer Motion 11** — Smooth animations & page transitions
-- **Zustand 4** — Minimal global state with devtools
-- **@google/generative-ai** — Official Gemini SDK
-- **Lucide React** — Consistent icon set
+Just make sure you have your Gemini API key set up properly in `.env`, and everything should just work. The mock data is realistic enough that you can click around and actually see how the different roles would interact with the app.
 
----
-
-*Built for FIFA World Cup 2026 · Demonstration only*
+Built by me for the FIFA World Cup 2026 project. It's a demonstration, but it actually works!
