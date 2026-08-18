@@ -3,7 +3,7 @@
 
 🌐 **Live Demo:** https://stadiapulse.vercel.app/
 
-So I built this project to explore how AI can actually help with real-world crowd management at major events like the FIFA World Cup. The idea came from thinking about all the chaos that happens at big stadiums — gates bottleneck, volunteers don't know what to say to fans in different languages, and nobody really has a good way to make sense of what's happening in real-time.
+I built this project to explore how AI can actually help with real-world crowd management at major events like the FIFA World Cup. The idea came from thinking about all the chaos that happens at big stadiums — gates bottleneck, Organizers don't know what to say to fans in different languages, and nobody really has a good way to make sense of what's happening in real-time.
 
 ## The Idea
 
@@ -47,7 +47,7 @@ The tech stack is pretty straightforward:
 - **React + Vite** — I picked Vite because the dev server is insanely fast
 - **TypeScript** — Caught a lot of bugs before they became problems
 - **Tailwind CSS** — Made styling the cyber dashboard theme way easier
-- **Zustand** — Super lightweight state management, didn't need Redux
+- **Firebase** — Storage  management for data.
 - **Gemini API** — All the AI smarts happen here
 
 
