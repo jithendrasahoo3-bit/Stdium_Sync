@@ -1,19 +1,3 @@
-/**
- * ============================================================
- * LOGIN PAGE COMPONENT — Multi-Role Authentication & Onboarding
- * ============================================================
- * 
- * File: pages/LoginPage.tsx
- * Purpose: Handles user authentication and role selection.
- * Customized onboarding flows for each role.
- * 
- * Features:
- *   - Step-by-step multi-step form (3 steps)
- *   - Role-specific data collection
- *   - Theme selection based on team preference
- *   - Animated step transitions
- *   - Mock authentication (always succeeds)
- */
 
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
@@ -26,13 +10,6 @@ import { useAppStore } from '../store/useAppStore';
 import type { Role } from '../types';
 import { StatusBadge } from '../components/ui/StatusBadge';
 
-/** Step type for form flow (1-3 steps) */
-type Step = 1 | 2 | 3;
-
-/**
- * FormData Interface
- * Collects user profile information across all steps
- */
 interface FormData {
   role: Role | null;
   name: string;
@@ -45,16 +22,11 @@ interface FormData {
   language: string;
 }
 
-/** Initial empty form state */
 const INITIAL_FORM: FormData = {
   role: null, name: '', department: '', accessLevel: 'standard',
   zone: '', languages: [], seatSection: '', teamSupporting: '', language: 'english',
 };
 
-/**
- * RoleCard Component
- * Interactive card for role selection in Step 1
- */
 const RoleCard = ({
   title, description, features, color, selected, onClick, flag,
 }: {
