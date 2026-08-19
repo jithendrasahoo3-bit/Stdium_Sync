@@ -1,26 +1,3 @@
-/**
- * ============================================================
- * HOME PAGE COMPONENT — Application Landing & Entry Point
- * ============================================================
- * 
- * File: pages/HomePage.tsx
- * Purpose: Public-facing landing page showcasing the application's
- * capabilities for three user roles (organizer, volunteer, fan).
- * Serves as the entry point to StadiumSync 2026.
- * 
- * Features:
- *   - Hero section with dynamic animations
- *   - Feature cards highlighting role-based capabilities
- *   - Live stadium visualization (stadium seat map)
- *   - Team/player showcase integration
- *   - Call-to-action buttons for role-based login
- *   - Responsive design with parallax scrolling effects
- * 
- * User Paths:
- *   - Organizer: Stadium management & crowd analysis
- *   - Volunteer: Real-time alerts & translations
- *   - Fan: Seat routing & match information
- */
 
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -33,16 +10,7 @@ import { useAppStore } from '../store/useAppStore';
 import { PlayerShowcase } from '../components/fan/PlayerShowcase';
 import { StadiumSeatMap } from '../components/stadium/StadiumSeatMap';
 
-/**
- * RAINBOW Color Palette
- * Visual variety for feature cards and decorative elements
- */
 const RAINBOW = ['#E06B6B','#AB74C7','#6AB482','#E09255','#E05A47'];
-
-/**
- * HexCard Component
- * Animated feature card for role capabilities
- */
 const HexCard = ({
   title, description, href, color, delay, flag,
 }: {
