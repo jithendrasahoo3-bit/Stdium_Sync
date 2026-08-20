@@ -1,23 +1,21 @@
 # STADIAPULSE 
-### My AI Project for Stadium Operations
 
 🌐 **Live Demo:** https://stadiapulse.vercel.app/
 
-I built this project to explore how AI can actually help with real-world crowd management at major events like the FIFA World Cup. The idea came from thinking about all the chaos that happens at big stadiums — gates bottleneck, Organizers don't know what to say to fans in different languages, and nobody really has a good way to make sense of what's happening in real-time.
+I built this project to explore how AI can actually help with real-world crowd management at major events like the FIFA World Cup and Football tournaments or any big event but now we focus on FIFA as two football Stadium. This idea came from thinking about all what happens at big stadiums — gates bottleneck, Organizers don't know what to say to fans in different languages, and nobody really has a good way to make sense of what's happening in real-time.
 
-## The Idea
-
-I wanted to build something that would work for three different types of people at a stadium:
+# The Idea
+I wanted to build something that would work for two different types of people at a stadium:
 
 - **Organizers** (the people running the show) — they need to see what's actually happening in the stadium and understand where problems are going to pop up before they do
 - **Fans** (everyone else) — they just want to know how to get to their seat without getting lost or stuck in a crazy line
 
-## What It Actually Does
+# What It Actually Does
 
 The whole thing runs on Google's Gemini AI to handle the smart parts. Each person role gets their own view of the stadium data, and the AI helps them make better decisions. I built in multi-language support (8 languages!) for volunteers, real-time crowd analysis for organizers, and turn-by-turn navigation for fans.
 
 
-#
+# Requirements to run locally 
 
 ```bash
 # Get the project running
@@ -41,8 +39,7 @@ npm run dev
 ```
 
 
-## How It's Built
-
+# Tech used to Build.
 The tech stack is pretty straightforward:
 - **React + Vite** — I picked Vite because the dev server is insanely fast
 - **TypeScript** — Caught a lot of bugs before they became problems
@@ -51,8 +48,7 @@ The tech stack is pretty straightforward:
 - **Gemini API** — All the AI smarts happen here
 
 
-## The Parts That Actually Matter
-
+# The Parts That Actually Matter
 **Real-time Crowd Analysis** — The organizer dashboard shows live data from 8 stadium gates, 9 facilities (restrooms, concessions, medical), and 5 security zones. The AI analyzes all this and suggests what to do next.
 
 **Translation & Cultural Awareness** — Volunteers can ask the app to translate alerts to 8 different languages, and it adds cultural context so nothing gets lost in translation.
@@ -61,34 +57,16 @@ The tech stack is pretty straightforward:
 
 **Handling API Rate Limits** — This was a pain to solve. The Gemini API has rate limits, so I built in exponential backoff that automatically retries if we hit a 429 error. It's been solid so far.
 
-## Challenges I Ran Into
-
+# Challenges I Ran Into
 **API Rate Limiting** — This was my biggest headache. Gemini has pretty strict rate limits, and I kept hitting them during testing. I ended up implementing exponential backoff with jitter, which actually worked really well. Retrying requests with increasing delays instead of just hammering the API was the key.
-
 **Making the AI Prompts Do What I Wanted** — Prompt engineering is harder than it sounds. Getting the AI to understand stadium context and generate useful, actionable insights took a lot of trial and error. I had to be very specific about what kind of output I wanted.
-
 **Handling 8-Language Translations Accurately** — Translation systems can be weird. I realized I needed to give the AI context about culture and local practices, not just word-for-word translations. A volunteer saying "please move away from the gate" needs different phrasing in different places.
 
-**State Management** — I initially overthought this. Zustand ended up being perfect because it's simple but powerful enough for what I needed without the boilerplate of Redux.
-
-## What I'm Happy With
-
-The organizer dashboard turned out pretty slick. Showing real-time telemetry in a way that's actually scannable was tough, but I think the layout works.
-
-The volunteer translation feature actually feels useful. Adding cultural notes to translations was something I added kind of late, but it makes a real difference.
-
-The whole app feels responsive. Vite made development incredibly fast, which meant I could iterate a lot.
-
-## What I'd Change If I Had More Time
-
+# What I'd Change If I Had More Time
 - Better error handling and recovery when the API goes down
 - A real database instead of mock data (right now everything resets on refresh)
 - More sophisticated congestion prediction — this could be way smarter
 - Better testing coverage (I know this is important, didn't get as far as I wanted)
 - Mobile responsiveness — right now it's pretty desktop-focused
-
-## Running It For Real
-
-Just make sure you have your Gemini API key set up properly in `.env`, and everything should just work. The mock data is realistic enough that you can click around and actually see how the different roles would interact with the app.
 
 Built by me for the FIFA World Cup 2026 project. It's a demonstration, but it actually works!
