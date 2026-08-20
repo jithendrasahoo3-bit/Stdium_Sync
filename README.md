@@ -20,8 +20,7 @@ cd stadiumsync-2026
 npm install
 
 # Set up your credentials
-cp .env.example .env
-# Then edit .env and add:
+
 # VITE_GEMINI_API_KEY=your_gemini_api_key_here
 # VITE_FIREBASE_API_KEY=your_firebase_api_key_here
 # VITE_FIREBASE_PROJECT_ID=your_firebase_project_id
