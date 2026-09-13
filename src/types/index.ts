@@ -1,7 +1,7 @@
-
 export type Role = 'organizer' | 'volunteer' | 'fan';
 export type AlertSeverity = 'critical' | 'warning' | 'info' | 'resolved';
 export type GateStatus = 'critical' | 'high' | 'moderate' | 'low' | 'normal';
+
 export interface GateTelemetry {
   id: string;
   name: string;
@@ -24,10 +24,11 @@ export interface FacilityTelemetry {
   status: GateStatus;
   operationalStatus: 'open' | 'busy' | 'overloaded' | 'closed';
 }
+
 export interface SecurityZone {
   id: string;
   name: string;
-  crowdDensity: number; // people per m²
+  crowdDensity: number;
   incidentCount: number;
   patrolUnits: number;
   riskLevel: 'green' | 'yellow' | 'orange' | 'red';
@@ -52,6 +53,7 @@ export interface StadiumTelemetry {
   medicalUnitsDeployed: number;
   activeIncidents: number;
 }
+
 export interface AnalysisStep {
   step: number;
   title: string;
@@ -67,6 +69,7 @@ export interface CrowdAnalysis {
   riskAssessment: string;
   generatedAt: string;
 }
+
 export interface AIAlert {
   id: string;
   severity: AlertSeverity;
@@ -78,7 +81,7 @@ export interface AIAlert {
   translatedVersions?: Record<SupportedLanguage, string>;
 }
 
-export type SupportedLanguage = 
+export type SupportedLanguage =
   | 'spanish'
   | 'french'
   | 'arabic'
@@ -87,6 +90,7 @@ export type SupportedLanguage =
   | 'german'
   | 'japanese'
   | 'mandarin';
+
 export interface TranslationResult {
   language: SupportedLanguage;
   languageLabel: string;
@@ -106,6 +110,7 @@ export interface FanRoute {
   aiNote: string;
   generatedAt: string;
 }
+
 export interface AppState {
   activeRole: Role;
   setActiveRole: (role: Role) => void;
@@ -113,6 +118,7 @@ export interface AppState {
   lastRefreshed: string;
   refreshTelemetry: () => void;
   crowdAnalysis: CrowdAnalysis | null;
+  isAnalyzing: boolean;
   analysisError: string | null;
   setCrowdAnalysis: (analysis: CrowdAnalysis | null) => void;
   setIsAnalyzing: (v: boolean) => void;
@@ -123,12 +129,17 @@ export interface AppState {
   translationResult: TranslationResult | null;
   isTranslating: boolean;
   translationError: string | null;
+  selectedAlertId: string | null;
+  selectedLanguage: SupportedLanguage | null;
   setTranslationResult: (r: TranslationResult | null) => void;
+  setIsTranslating: (v: boolean) => void;
+  setTranslationError: (e: string | null) => void;
+  setSelectedAlertId: (id: string | null) => void;
   setSelectedLanguage: (lang: SupportedLanguage | null) => void;
   fanRoute: FanRoute | null;
   isGeneratingRoute: boolean;
   routeError: string | null;
-  fanSeatInput: string;  
+  fanSeatInput: string;
   setFanRoute: (route: FanRoute | null) => void;
   setIsGeneratingRoute: (v: boolean) => void;
   setRouteError: (e: string | null) => void;

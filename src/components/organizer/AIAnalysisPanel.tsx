@@ -1,8 +1,3 @@
-// ============================================================
-// AI ANALYSIS PANEL — Organizer Dashboard
-// XAI reasoning display from Gemini crowd analysis
-// ============================================================
-
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Brain, Zap, AlertTriangle, CheckCircle, Clock, ChevronDown, ChevronUp, Sparkles } from 'lucide-react';
@@ -31,12 +26,15 @@ const StrategyStep = ({ step, index }: { step: AnalysisStep; index: number }) =>
       className={`rounded-xl border ${cfg.border} ${cfg.bg} overflow-hidden`}
     >
       <button
+        type="button"
         onClick={() => setExpanded(!expanded)}
         className="w-full flex items-center gap-4 p-4 text-left hover:bg-white/2 transition-colors"
       >
-        <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
-          cfg.glow === 'red' ? 'bg-cyber-red/20' : cfg.glow === 'amber' ? 'bg-cyber-amber/20' : 'bg-cyber-teal/20'
-        }`}>
+        <div
+          className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
+            cfg.glow === 'red' ? 'bg-cyber-red/20' : cfg.glow === 'amber' ? 'bg-cyber-amber/20' : 'bg-cyber-teal/20'
+          }`}
+        >
           <Icon className={`w-5 h-5 ${cfg.color}`} />
         </div>
         <div className="flex-1 min-w-0">
@@ -79,7 +77,6 @@ const StrategyStep = ({ step, index }: { step: AnalysisStep; index: number }) =>
   );
 };
 
-// ── Analysis Skeleton ─────────────────────────────────────
 const AnalysisSkeleton = () => (
   <GlassPanel glow="teal" className="space-y-6">
     <div className="flex items-center gap-3">
@@ -95,7 +92,7 @@ const AnalysisSkeleton = () => (
       <div className="h-3 text-xs font-mono text-cyber-teal/60 font-semibold tracking-wider">ANALYZING TELEMETRY DATA...</div>
       <SkeletonLoader lines={3} height="h-3" />
     </div>
-    {[0, 1, 2].map(i => (
+    {[0, 1, 2].map((i) => (
       <div key={i} className="rounded-xl border border-glass-border p-4 space-y-2">
         <div className="h-4 w-1/4 bg-cyber-blue/50 rounded animate-pulse" />
         <SkeletonLoader lines={2} height="h-3" />
@@ -117,7 +114,6 @@ const AnalysisSkeleton = () => (
   </GlassPanel>
 );
 
-// ── Main Panel ────────────────────────────────────────────
 export const AIAnalysisPanel = () => {
   const {
     telemetry,
@@ -152,10 +148,10 @@ export const AIAnalysisPanel = () => {
 
   return (
     <div className="space-y-4">
-      {/* Trigger Button */}
       {!isAnalyzing && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
           <button
+            type="button"
             onClick={handleAnalyze}
             disabled={isAnalyzing}
             className="group w-full relative overflow-hidden rounded-xl border border-cyber-teal/40 bg-cyber-teal/10 hover:bg-cyber-teal/20 transition-all duration-300 p-4 flex items-center justify-center gap-3 hover:shadow-cyber disabled:opacity-50 disabled:cursor-not-allowed"
@@ -169,7 +165,7 @@ export const AIAnalysisPanel = () => {
                 <p className="font-display text-white font-bold text-sm tracking-wide">
                   AI CROWD ANALYSIS
                 </p>
-                <p className="font-mono text-cyber-teal text-xs">Powered by Gemini 1.5 Flash · XAI Reasoning</p>
+                <p className="font-mono text-cyber-teal text-xs">Powered by Gemini 2.5 Flash · XAI Reasoning</p>
               </div>
               <Sparkles className="w-5 h-5 text-cyber-teal ml-auto animate-pulse" />
             </div>
@@ -177,35 +173,24 @@ export const AIAnalysisPanel = () => {
         </motion.div>
       )}
 
-      {/* Loading State */}
       <AnimatePresence>
         {isAnalyzing && (
-          <motion.div
-            key="skeleton"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
+          <motion.div key="skeleton" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
             <AnalysisSkeleton />
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Error State */}
       <AnimatePresence>
         {analysisError && (
-          <motion.div
-            key="error"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-          >
+          <motion.div key="error" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
             <GlassPanel glow="red" className="flex items-start gap-3">
               <AlertTriangle className="w-5 h-5 text-cyber-red flex-shrink-0 mt-0.5" />
               <div>
                 <p className="font-display text-cyber-red font-semibold text-sm mb-1">Analysis Failed</p>
                 <p className="font-body text-slate-400 text-sm">{analysisError}</p>
                 <button
+                  type="button"
                   onClick={handleAnalyze}
                   className="mt-3 font-mono text-xs text-cyber-teal hover:text-white transition-colors border border-cyber-teal/30 hover:border-cyber-teal rounded px-3 py-1.5"
                 >
@@ -217,16 +202,9 @@ export const AIAnalysisPanel = () => {
         )}
       </AnimatePresence>
 
-      {/* Results */}
       <AnimatePresence>
         {crowdAnalysis && !isAnalyzing && (
-          <motion.div
-            key="results"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="space-y-4"
-          >
-            {/* Header */}
+          <motion.div key="results" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
             <GlassPanel glow="teal" noPadding className="p-5">
               <div className="flex items-start justify-between gap-3 mb-4">
                 <div className="flex items-center gap-3">
@@ -243,20 +221,17 @@ export const AIAnalysisPanel = () => {
                 <CheckCircle className="w-5 h-5 text-cyber-green flex-shrink-0 mt-1" />
               </div>
 
-              {/* Executive Summary */}
               <div className="bg-cyber-blue/40 rounded-lg p-4 mb-4">
                 <p className="font-mono text-xs text-cyber-teal mb-2 tracking-wider font-semibold">EXECUTIVE SUMMARY</p>
                 <p className="font-body text-slate-200 text-sm leading-relaxed">{crowdAnalysis.summary}</p>
               </div>
 
-              {/* Risk Assessment */}
               <div className="bg-cyber-red/10 border border-cyber-red/20 rounded-lg p-3">
                 <p className="font-mono text-xs text-cyber-red mb-1 tracking-wider font-semibold">RISK ASSESSMENT</p>
                 <p className="font-body text-slate-300 text-sm leading-relaxed">{crowdAnalysis.riskAssessment}</p>
               </div>
             </GlassPanel>
 
-            {/* Bottlenecks */}
             <GlassPanel glow="amber" noPadding className="p-5">
               <p className="font-mono text-xs text-cyber-amber mb-3 tracking-wider font-semibold flex items-center gap-2">
                 <AlertTriangle className="w-4 h-4" />
@@ -280,7 +255,6 @@ export const AIAnalysisPanel = () => {
               </ul>
             </GlassPanel>
 
-            {/* 3-Step Strategy */}
             <div className="space-y-2">
               <p className="font-display text-white font-semibold text-sm tracking-wide flex items-center gap-2">
                 <div className="w-1 h-4 bg-cyber-purple rounded-full" />
@@ -291,8 +265,8 @@ export const AIAnalysisPanel = () => {
               ))}
             </div>
 
-            {/* Re-analyze button */}
             <button
+              type="button"
               onClick={handleAnalyze}
               className="w-full font-mono text-xs text-slate-500 hover:text-cyber-teal transition-colors border border-glass-border hover:border-cyber-teal/30 rounded-lg py-2.5 flex items-center justify-center gap-2"
             >

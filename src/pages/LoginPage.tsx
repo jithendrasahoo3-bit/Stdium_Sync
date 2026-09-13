@@ -10,6 +10,8 @@ import { useAppStore } from '../store/useAppStore';
 import type { Role } from '../types';
 import { StatusBadge } from '../components/ui/StatusBadge';
 
+type Step = 1 | 2 | 3;
+
 interface FormData {
   role: Role | null;
   name: string;

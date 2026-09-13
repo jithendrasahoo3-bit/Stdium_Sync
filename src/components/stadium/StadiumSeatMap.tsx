@@ -70,15 +70,11 @@ const SEAT_COLORS: Record<SeatStatus, string> = {
   aisle: 'transparent',
 };
 
-/* ────────── Sub-components ────────── */
-
-// ── Tier badge
 const TierBadge = ({ tier }: { tier: Section['tier'] }) => {
   const cfg = { vip: { label: '★ VIP', bg: '#F5C842', text: '#4A3535' }, premium: { label: '◆ PREMIUM', bg: '#E06B6B', text: '#FFF5E4' }, standard: { label: '● STANDARD', bg: '#AB74C7', text: '#FFF5E4' }, general: { label: '○ GENERAL', bg: '#6AB482', text: '#FFF5E4' } }[tier];
   return <span className="inline-flex items-center px-2 py-0.5 rounded text-[9px] font-bold tracking-wider" style={{ backgroundColor: cfg.bg, color: cfg.text }}>{cfg.label}</span>;
 };
 
-// ── Stadium SVG overview
 const StadiumOverview = ({ sections, selected, onSelect, mode }: { sections: Section[]; selected: string | null; onSelect: (id: string) => void; mode: ViewMode }) => {
   const getOccupancyColor = (pct: number) => pct >= 90 ? '#E05A47' : pct >= 70 ? '#E09255' : pct >= 50 ? '#F5C842' : '#6AB482';
 
@@ -150,7 +146,6 @@ const StadiumOverview = ({ sections, selected, onSelect, mode }: { sections: Sec
   );
 };
 
-// ── Individual seat grid
 const SeatGrid = ({ section, selectedIds, onToggle, mode }: { section: Section; selectedIds: Set<string>; onToggle: (id: string) => void; mode: ViewMode }) => {
   const seats = useMemo(() => generateSeats(section, selectedIds), [section, selectedIds]);
 
@@ -201,7 +196,6 @@ const SeatGrid = ({ section, selectedIds, onToggle, mode }: { section: Section; 
   );
 };
 
-// ── Legend
 const Legend = ({ mode }: { mode: ViewMode }) => {
   const items = mode === 'fan'
     ? [
@@ -229,7 +223,6 @@ const Legend = ({ mode }: { mode: ViewMode }) => {
   );
 };
 
-// ── Booking summary panel
 const BookingPanel = ({ section, selectedIds, onConfirm, onClear }: {
   section: Section; selectedIds: Set<string>; onConfirm: () => void; onClear: () => void;
 }) => {
@@ -238,56 +231,49 @@ const BookingPanel = ({ section, selectedIds, onConfirm, onClear }: {
 
   if (count === 0) return (
     <div className="rounded-xl border border-glass-border bg-glass-bg p-5 text-center space-y-2">
-      <MapPin className="w-6 h-6 mx-auto text-slate-400" />
-      <p className="font-mono text-[10px] text-slate-400 tracking-wider">SELECT SEATS ON THE MAP</p>
-      <p className="font-body text-xs text-slate-400">Tap a green or gold seat to select it</p>
+      <p className="font-display text-sm font-bold text-theme-text-muted">No Seats Selected</p>
+      <p className="font-body text-xs text-slate-500">Click any available (green) or VIP (orange) seat in the grid above to start booking.</p>
     </div>
   );
 
   return (
-    <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-      className="rounded-xl border p-5 space-y-4"
-      style={{ borderColor: section.color + '55', background: section.glowColor }}>
-      <div className="flex items-center gap-2">
-        <Ticket className="w-4 h-4" style={{ color: section.color }} />
-        <span className="font-mono text-[10px] font-bold tracking-widest" style={{ color: section.color }}>BOOKING SUMMARY</span>
+    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+      className="rounded-xl border border-glass-border bg-glass-bg p-5 space-y-4">
+      <div className="flex items-center justify-between border-b border-glass-border/40 pb-3">
+        <div>
+          <p className="font-mono text-[9px] text-slate-500 tracking-wider">BOOKING SUMMARY</p>
+          <p className="font-display text-base font-bold text-theme-text-dark">{section.label} · {count} {count === 1 ? 'Seat' : 'Seats'}</p>
+        </div>
+        <button onClick={onClear} className="font-mono text-[10px] text-theme-text-muted hover:text-cyber-red transition-colors">Clear</button>
       </div>
 
-      <div className="space-y-2">
-        {Array.from(selectedIds).map(sid => {
-          const [, seatCode] = sid.split('-');
+      <div className="space-y-1.5 max-h-[120px] overflow-y-auto pr-1">
+        {Array.from(selectedIds).map(id => {
+          const [, row, num] = id.split('-');
           return (
-            <div key={sid} className="flex items-center justify-between">
-              <span className="font-mono text-xs text-theme-text-dark font-bold">
-                {section.label} · Row {seatCode[0]}, Seat {seatCode.slice(1)}
-              </span>
-              <span className="font-mono text-xs font-bold" style={{ color: section.color }}>${section.price}</span>
+            <div key={id} className="flex items-center justify-between text-xs py-1 px-2 rounded bg-[#FFE3E1]/40 border border-glass-border/30">
+              <span className="font-mono text-[10px] text-theme-text-dark font-bold">Row {row}, Seat {num}</span>
+              <span className="font-mono text-[10px] text-theme-text-dark font-bold">${section.price}</span>
             </div>
           );
         })}
       </div>
 
-      <div className="border-t border-glass-border/40 pt-3 flex items-center justify-between">
+      <div className="flex items-center justify-between pt-2 border-t border-glass-border/40">
         <div>
-          <p className="font-mono text-[9px] text-slate-500 tracking-wider">{count} SEAT{count > 1 ? 'S' : ''} SELECTED</p>
-          <p className="font-mono text-xl font-bold text-theme-text-dark">${total.toLocaleString()}</p>
+          <p className="font-mono text-[8px] text-slate-500">TOTAL (USD)</p>
+          <p className="font-display text-xl font-bold text-theme-text-dark">${total.toLocaleString()}</p>
         </div>
-        <div className="flex flex-col gap-2">
-          <motion.button whileHover={{ scale: 1.03, y: -1 }} whileTap={{ scale: 0.97 }} onClick={onConfirm}
-            className="flex items-center gap-1.5 px-5 py-2 rounded-lg font-mono text-xs font-bold text-white"
-            style={{ backgroundColor: section.color, boxShadow: `0 4px 16px ${section.glowColor}` }}>
-            <Zap className="w-3.5 h-3.5" /> CONFIRM BOOKING
-          </motion.button>
-          <button onClick={onClear} className="text-[10px] font-mono text-slate-400 hover:text-slate-600 transition-colors">
-            Clear selection
-          </button>
-        </div>
+        <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} onClick={onConfirm}
+          className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-display text-xs font-bold text-[#FFF5E4] shadow-md cursor-pointer"
+          style={{ background: 'linear-gradient(135deg, #FF9494, #E06B6B)' }}>
+          Confirm Booking
+        </motion.button>
       </div>
     </motion.div>
   );
 };
 
-// ── Section info card
 const SectionInfoCard = ({ section, mode }: { section: Section; mode: ViewMode }) => (
   <div className="rounded-xl border border-glass-border bg-glass-bg p-4 space-y-3">
     <div className="flex items-center justify-between">
@@ -332,7 +318,6 @@ const SectionInfoCard = ({ section, mode }: { section: Section; mode: ViewMode }
         </>
       )}
     </div>
-    {/* Occupancy bar */}
     <div>
       <div className="flex justify-between mb-1">
         <span className="font-mono text-[8px] text-slate-500 tracking-wider">OCCUPANCY</span>
@@ -346,7 +331,6 @@ const SectionInfoCard = ({ section, mode }: { section: Section; mode: ViewMode }
   </div>
 );
 
-// ── Booking success modal
 const BookingSuccess = ({ section, count, onClose }: { section: Section; count: number; onClose: () => void }) => (
   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
     className="fixed inset-0 z-50 flex items-center justify-center p-4"

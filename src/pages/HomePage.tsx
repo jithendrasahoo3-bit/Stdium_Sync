@@ -316,5 +316,3 @@ export const HomePage = () => {
     </div>
   );
 };
-
-// this is end of the home page component

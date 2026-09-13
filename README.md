@@ -48,7 +48,7 @@ The tech stack is pretty straightforward:
 **Real-time Crowd Analysis** — The organizer dashboard shows live data from 8 stadium gates, 9 facilities (restrooms, concessions, medical), and 5 security zones. The AI analyzes all this and suggests what to do next.
 **Translation & Cultural Awareness** — Volunteers can ask the app to translate alerts to 8 different languages, and it adds cultural context so nothing gets lost in translation.
 **Smart Routing** — Fans enter their seat location and the app generates turn-by-turn directions while trying to avoid bottlenecks and congestion.
-**Voting & Live chats** - it is not fully developed but it helps the fan to do polls and get emergency massage form the organizers.
+**Voting & Live chats** — Helps fans participate in polls and receive emergency broadcast messages directly from the organizers.
 
 # Challenges I Ran Into
 **API Rate Limiting** — This was my biggest headache. Gemini has pretty strict rate limits, and I kept hitting them during testing. I ended up implementing exponential backoff with jitter, which actually worked really well. Retrying requests with increasing delays instead of just hammering the API was the key.
