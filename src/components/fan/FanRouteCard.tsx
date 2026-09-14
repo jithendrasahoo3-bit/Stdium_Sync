@@ -3,70 +3,29 @@ import {
   MapPin,
   Navigation,
   Clock,
-  Star,
-  Sparkles,
   AlertTriangle,
   ArrowRight,
-  Shield,
+  ShieldAlert,
   RotateCcw,
+  Info,
 } from 'lucide-react';
 import { useAppStore } from '../../store/useAppStore';
 import { generateFanRoute } from '../../services/geminiService';
-import { GlassPanel } from '../ui/GlassPanel';
-import { SkeletonLoader } from '../ui/SkeletonLoader';
-
-const RouteSkeleton = () => (
-  <GlassPanel glow="green" className="space-y-6">
-    <div className="flex items-center gap-3">
-      <div className="w-12 h-12 rounded-full bg-cyber-green/20 animate-pulse flex items-center justify-center">
-        <Navigation className="w-6 h-6 text-cyber-green animate-pulse" />
-      </div>
-      <div className="space-y-2 flex-1">
-        <div className="h-4 w-1/2 bg-cyber-green/20 rounded animate-pulse" />
-        <div className="h-2.5 w-2/3 bg-cyber-blue/50 rounded animate-pulse" />
-      </div>
-    </div>
-    <SkeletonLoader lines={4} height="h-3" />
-    <div className="space-y-2">
-      {[1, 2, 3, 4].map((i) => (
-        <div key={i} className="flex items-center gap-3">
-          <div className="w-6 h-6 rounded-full bg-cyber-blue/50 animate-pulse flex-shrink-0" />
-          <div className="h-3 rounded bg-cyber-blue/40 animate-pulse flex-1" style={{ width: `${60 + i * 10}%` }} />
-        </div>
-      ))}
-    </div>
-    <div className="flex justify-center gap-2">
-      {[0, 0.2, 0.4].map((d, i) => (
-        <motion.div
-          key={i}
-          className="w-2 h-2 rounded-full bg-cyber-green"
-          animate={{ opacity: [0.3, 1, 0.3], scale: [1, 1.3, 1] }}
-          transition={{ repeat: Infinity, duration: 1.2, delay: d }}
-        />
-      ))}
-    </div>
-  </GlassPanel>
-);
 
 const RouteStep = ({ step, index, total }: { step: string; index: number; total: number }) => (
-  <motion.div
-    initial={{ opacity: 0, x: -10 }}
-    animate={{ opacity: 1, x: 0 }}
-    transition={{ delay: 0.2 + index * 0.12 }}
-    className="flex items-start gap-3"
-  >
-    <div className="relative flex-shrink-0">
-      <div className="w-8 h-8 rounded-full bg-teal-gradient flex items-center justify-center text-cyber-dark font-mono text-xs font-bold shadow-cyber">
+  <div className="flex items-start gap-3.5">
+    <div className="relative flex flex-col items-center flex-shrink-0">
+      <div className="w-7 h-7 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold shadow-sm">
         {index + 1}
       </div>
       {index < total - 1 && (
-        <div className="absolute left-1/2 top-8 bottom-0 w-px bg-gradient-to-b from-cyber-teal/40 to-transparent h-6 -translate-x-1/2" />
+        <div className="w-0.5 bg-slate-200 h-8 my-1" />
       )}
     </div>
-    <div className="flex-1 pb-6">
-      <p className="font-body text-sm text-slate-200 leading-relaxed">{step}</p>
+    <div className="flex-1 pb-4">
+      <p className="text-sm font-medium text-slate-800 leading-snug">{step}</p>
     </div>
-  </motion.div>
+  </div>
 );
 
 export const FanRouteCard = () => {
@@ -102,128 +61,118 @@ export const FanRouteCard = () => {
 
   return (
     <div className="space-y-4">
-      <GlassPanel glow="teal" noPadding className="p-5">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 rounded-lg bg-teal-gradient flex items-center justify-center shadow-cyber flex-shrink-0">
-            <MapPin className="w-5 h-5 text-cyber-dark" />
+      <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-lg bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-600 flex-shrink-0">
+            <Navigation className="w-5 h-5" />
           </div>
           <div>
-            <p className="font-display text-white font-bold text-sm tracking-wide">GET YOUR AI ROUTE</p>
-            <p className="font-body text-slate-400 text-xs">AI will route you around active bottlenecks</p>
+            <h3 className="font-bold text-slate-900 text-base">Seat Navigator &amp; Gate Router</h3>
+            <p className="text-xs text-slate-500">Calculates turn-by-turn path avoiding congested stadium gates</p>
           </div>
         </div>
 
         <div className="space-y-3">
           <div>
-            <label className="font-mono text-xs text-slate-500 mb-1.5 block tracking-wider">
-              ENTER YOUR SEAT SECTION
+            <label className="text-xs font-bold text-slate-600 mb-1.5 block uppercase tracking-wider">
+              Enter Seat Location or Section
             </label>
-            <input
-              type="text"
-              value={fanSeatInput}
-              onChange={(e) => setFanSeatInput(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleGetRoute()}
-              placeholder="e.g. Section 203, Row F, Seat 12"
-              className="w-full bg-cyber-dark/60 border border-glass-border focus:border-cyber-teal/60 rounded-lg px-4 py-3 text-white font-body text-sm placeholder-slate-600 outline-none transition-all duration-200 focus:shadow-cyber"
-            />
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={fanSeatInput}
+                onChange={(e) => setFanSeatInput(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleGetRoute()}
+                placeholder="e.g. Section 203, Row F, Seat 12"
+                className="flex-1 bg-slate-50 border border-slate-200 focus:border-blue-600 focus:bg-white rounded-lg px-3.5 py-2.5 text-slate-900 text-sm placeholder-slate-400 outline-none transition-all"
+              />
+              <button
+                type="button"
+                onClick={handleGetRoute}
+                disabled={!fanSeatInput.trim() || isGeneratingRoute}
+                className="px-4 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs font-bold transition-colors shadow-sm flex items-center gap-1.5"
+              >
+                <Navigation className="w-3.5 h-3.5" />
+                <span>{isGeneratingRoute ? 'Routing...' : 'Find Route'}</span>
+              </button>
+            </div>
           </div>
-
-          <button
-            type="button"
-            onClick={handleGetRoute}
-            disabled={!fanSeatInput.trim() || isGeneratingRoute}
-            className="group w-full relative overflow-hidden rounded-xl bg-teal-gradient hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 p-4 flex items-center justify-center gap-3 shadow-cyber hover:shadow-cyber-strong"
-          >
-            <Navigation className="w-5 h-5 text-cyber-dark" />
-            <span className="font-display text-cyber-dark font-bold text-sm tracking-wide">
-              {isGeneratingRoute ? 'GENERATING...' : 'GET MY ROUTE'}
-            </span>
-            <Sparkles className="w-4 h-4 text-cyber-dark" />
-          </button>
         </div>
-      </GlassPanel>
+      </div>
 
       {aiAlerts.length > 0 && !fanRoute && !isGeneratingRoute && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-          <GlassPanel glow="amber" noPadding className="p-4">
-            <div className="flex items-center gap-2 mb-2">
-              <AlertTriangle className="w-4 h-4 text-cyber-amber animate-pulse" />
-              <p className="font-mono text-xs text-cyber-amber font-semibold tracking-wider">
-                {aiAlerts.filter((a) => a.severity === 'critical').length} CRITICAL ALERTS ACTIVE
-              </p>
-            </div>
-            <p className="font-body text-xs text-slate-400">
-              AI is routing you around {telemetry.gates.filter((g) => g.status === 'critical').length} congested gates automatically.
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3">
+          <AlertTriangle className="w-4 h-4 text-amber-700 flex-shrink-0 mt-0.5" />
+          <div className="text-xs text-amber-900">
+            <p className="font-bold">Active Ingress Advisory</p>
+            <p className="text-amber-800 mt-0.5">
+              Some gates are currently at peak queue capacity. The routing engine automatically redirects your entry to the lowest-wait gate for your tier.
             </p>
-          </GlassPanel>
-        </motion.div>
+          </div>
+        </div>
+      )}
+
+      {isGeneratingRoute && (
+        <div className="bg-white border border-slate-200 rounded-xl p-8 text-center space-y-3 shadow-sm">
+          <div className="w-9 h-9 border-3 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto" />
+          <p className="text-sm font-semibold text-slate-800">Calculating Concourse Trajectory...</p>
+          <p className="text-xs text-slate-500">Checking nearest gates, turnstile queues, and walking corridors</p>
+        </div>
+      )}
+
+      {routeError && (
+        <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-start gap-3">
+          <AlertTriangle className="w-5 h-5 text-red-600 flex-shrink-0" />
+          <div className="flex-1">
+            <p className="font-bold text-red-900 text-sm">Route Calculation Failed</p>
+            <p className="text-xs text-red-700 mt-1">{routeError}</p>
+            <button
+              type="button"
+              onClick={handleGetRoute}
+              className="mt-2 text-xs font-semibold text-red-800 border border-red-300 rounded px-2.5 py-1 bg-white hover:bg-red-50"
+            >
+              Retry
+            </button>
+          </div>
+        </div>
       )}
 
       <AnimatePresence>
-        {isGeneratingRoute && (
-          <motion.div key="loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <RouteSkeleton />
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {routeError && (
-          <motion.div key="error" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <GlassPanel glow="red" className="flex items-start gap-3">
-              <AlertTriangle className="w-5 h-5 text-cyber-red flex-shrink-0" />
-              <div>
-                <p className="font-display text-cyber-red font-semibold text-sm">Route Generation Failed</p>
-                <p className="font-body text-slate-400 text-xs mt-1">{routeError}</p>
-                <button
-                  type="button"
-                  onClick={handleGetRoute}
-                  className="mt-2 font-mono text-xs text-cyber-teal hover:text-white border border-cyber-teal/30 rounded px-3 py-1.5 transition-colors"
-                >
-                  RETRY
-                </button>
-              </div>
-            </GlassPanel>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence>
         {fanRoute && !isGeneratingRoute && (
-          <motion.div key="route" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-4">
-            <GlassPanel glow="green" noPadding className="p-5">
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-xl bg-green-gradient flex items-center justify-center shadow-green-glow flex-shrink-0">
-                    <Navigation className="w-6 h-6 text-cyber-dark" />
-                  </div>
-                  <div>
-                    <p className="font-mono text-xs text-cyber-green font-semibold tracking-wider mb-0.5">AI ROUTE READY</p>
-                    <p className="font-display text-white font-bold text-base">{fanRoute.seatSection}</p>
-                  </div>
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
+            {/* Route Summary Card */}
+            <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-4">
+              <div className="flex items-start justify-between">
+                <div>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                    Fastest Ingress Route
+                  </span>
+                  <h4 className="font-bold text-slate-900 text-lg mt-1.5">{fanRoute.seatSection}</h4>
                 </div>
-                <div className="flex items-center gap-1.5 bg-cyber-green/10 border border-cyber-green/30 rounded-lg px-3 py-1.5">
-                  <Clock className="w-3 h-3 text-cyber-green" />
-                  <span className="font-mono text-xs text-cyber-green font-bold">{fanRoute.estimatedWalkTime} min</span>
+                <div className="flex items-center gap-1.5 bg-slate-100 border border-slate-200 px-3 py-1 rounded-lg text-slate-800 text-xs font-bold">
+                  <Clock className="w-3.5 h-3.5 text-slate-600" />
+                  <span>~{fanRoute.estimatedWalkTime} min walk</span>
                 </div>
               </div>
 
-              <div className="flex items-center gap-3 bg-cyber-green/10 rounded-lg p-3 border border-cyber-green/20 mb-3">
-                <ArrowRight className="w-4 h-4 text-cyber-green flex-shrink-0" />
+              <div className="p-3.5 rounded-lg bg-emerald-50 border border-emerald-200 flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-emerald-600 text-white flex items-center justify-center flex-shrink-0 font-bold">
+                  <ArrowRight className="w-4 h-4" />
+                </div>
                 <div>
-                  <p className="font-mono text-xs text-slate-500">ENTER VIA</p>
-                  <p className="font-body font-semibold text-white text-sm">{fanRoute.recommendedGate}</p>
+                  <p className="text-[11px] font-bold text-emerald-800 uppercase tracking-wider">Recommended Entry Gate</p>
+                  <p className="text-sm font-bold text-emerald-950">{fanRoute.recommendedGate}</p>
                 </div>
               </div>
 
               {fanRoute.avoidGates.length > 0 && (
-                <div className="flex items-start gap-2.5 bg-cyber-red/5 rounded-lg p-3 border border-cyber-red/20">
-                  <Shield className="w-4 h-4 text-cyber-red flex-shrink-0 mt-0.5" />
+                <div className="p-3 rounded-lg bg-red-50 border border-red-200 flex items-start gap-2.5">
+                  <ShieldAlert className="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="font-mono text-xs text-cyber-red mb-1">AVOID THESE GATES</p>
-                    <div className="flex flex-wrap gap-2">
+                    <p className="text-[11px] font-bold text-red-800 uppercase tracking-wider">Avoid Congested Gates</p>
+                    <div className="flex flex-wrap gap-1.5 mt-1">
                       {fanRoute.avoidGates.map((g, i) => (
-                        <span key={i} className="font-body text-xs text-slate-400 bg-cyber-red/10 border border-cyber-red/20 rounded px-2 py-0.5">
+                        <span key={i} className="text-xs bg-white text-red-700 border border-red-200 rounded px-2 py-0.5 font-medium">
                           {g}
                         </span>
                       ))}
@@ -231,34 +180,31 @@ export const FanRouteCard = () => {
                   </div>
                 </div>
               )}
-            </GlassPanel>
+            </div>
 
-            <GlassPanel glow="teal" noPadding className="p-5">
-              <p className="font-mono text-xs text-cyber-teal font-semibold tracking-wider mb-4 flex items-center gap-2">
-                <MapPin className="w-3 h-3" />
-                TURN-BY-TURN DIRECTIONS
-              </p>
-              <div className="space-y-0">
+            {/* Turn by turn */}
+            <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-4">
+              <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
+                <MapPin className="w-4 h-4 text-blue-600" />
+                <h4 className="font-bold text-slate-900 text-sm uppercase tracking-wider">Step-by-Step Wayfinding</h4>
+              </div>
+              <div className="space-y-1 pt-1">
                 {fanRoute.instructions.map((step, i) => (
                   <RouteStep key={i} step={step} index={i} total={fanRoute.instructions.length} />
                 ))}
               </div>
-            </GlassPanel>
+            </div>
 
-            <GlassPanel glow="purple" noPadding className="p-4">
-              <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-full bg-cyber-purple/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <Star className="w-4 h-4 text-cyber-purple" />
-                </div>
-                <div>
-                  <p className="font-mono text-xs text-cyber-purple font-semibold mb-1 tracking-wider">AI INSIGHT</p>
-                  <p className="font-body text-sm text-slate-300 leading-relaxed">{fanRoute.aiNote}</p>
-                  <p className="font-mono text-xs text-slate-600 mt-2">
-                    Generated {new Date(fanRoute.generatedAt).toLocaleTimeString()}
-                  </p>
+            {/* Concourse Note */}
+            {fanRoute.aiNote && (
+              <div className="bg-blue-50/70 border border-blue-200 rounded-xl p-4 flex items-start gap-3">
+                <Info className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
+                <div className="text-xs text-blue-950">
+                  <p className="font-bold uppercase tracking-wider text-blue-800 text-[10px]">Concourse Wayfinding Note</p>
+                  <p className="mt-1 leading-relaxed">{fanRoute.aiNote}</p>
                 </div>
               </div>
-            </GlassPanel>
+            )}
 
             <button
               type="button"
@@ -266,10 +212,10 @@ export const FanRouteCard = () => {
                 setFanRoute(null);
                 setRouteError(null);
               }}
-              className="w-full flex items-center justify-center gap-2 text-xs font-mono text-slate-500 hover:text-cyber-teal transition-colors border border-glass-border hover:border-cyber-teal/30 rounded-lg py-2.5"
+              className="w-full flex items-center justify-center gap-2 text-xs font-semibold text-slate-600 hover:text-slate-900 bg-white border border-slate-200 hover:border-slate-300 rounded-xl py-3 transition-colors shadow-sm"
             >
-              <RotateCcw className="w-3 h-3" />
-              GET NEW ROUTE
+              <RotateCcw className="w-3.5 h-3.5" />
+              <span>Route Another Seat</span>
             </button>
           </motion.div>
         )}
@@ -277,3 +223,4 @@ export const FanRouteCard = () => {
     </div>
   );
 };
+

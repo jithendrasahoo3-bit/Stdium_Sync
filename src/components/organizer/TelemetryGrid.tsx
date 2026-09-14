@@ -1,139 +1,100 @@
-import { motion } from 'framer-motion';
-import { RefreshCw, TrendingUp, TrendingDown, Minus, AlertTriangle, Gauge } from 'lucide-react';
+import { RefreshCw, TrendingUp, TrendingDown, Minus, AlertTriangle, Users, HeartPulse, Thermometer } from 'lucide-react';
 import { useAppStore } from '../../store/useAppStore';
-import { GlassPanel } from '../ui/GlassPanel';
 import { StatusBadge } from '../ui/StatusBadge';
 import type { GateTelemetry, FacilityTelemetry, SecurityZone } from '../../types';
 
 const CapacityRing = ({ percentage, status }: { percentage: number; status: string }) => {
   const color =
     status === 'critical'
-      ? '#FF3B5C'
+      ? '#ef4444' // Red
       : status === 'high'
-      ? '#FFB800'
+      ? '#f59e0b' // Amber
       : status === 'moderate'
-      ? '#7B61FF'
-      : status === 'low'
-      ? '#00D4C8'
-      : '#00FF87';
+      ? '#6366f1' // Indigo
+      : '#10b981'; // Emerald
 
-  const r = 28;
+  const r = 24;
   const circ = 2 * Math.PI * r;
   const dash = (percentage / 100) * circ;
 
   return (
-    <div className="relative w-16 h-16 flex items-center justify-center flex-shrink-0">
-      <svg className="w-16 h-16 -rotate-90" viewBox="0 0 72 72">
-        <circle cx="36" cy="36" r={r} fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="6" />
+    <div className="relative w-14 h-14 flex items-center justify-center flex-shrink-0">
+      <svg className="w-14 h-14 -rotate-90" viewBox="0 0 60 60">
+        <circle cx="30" cy="30" r={r} fill="none" stroke="#e2e8f0" strokeWidth="5" />
         <circle
-          cx="36"
-          cy="36"
+          cx="30"
+          cy="30"
           r={r}
           fill="none"
           stroke={color}
-          strokeWidth="6"
+          strokeWidth="5"
           strokeDasharray={`${dash} ${circ}`}
           strokeLinecap="round"
-          style={{ filter: `drop-shadow(0 0 4px ${color})`, transition: 'stroke-dasharray 0.5s ease' }}
+          className="transition-all duration-500"
         />
       </svg>
-      <span className="absolute font-mono font-bold text-xs text-white">{percentage}%</span>
+      <span className="absolute text-xs font-bold text-slate-800">{percentage}%</span>
     </div>
   );
 };
 
-const GateCard = ({ gate, index }: { gate: GateTelemetry; index: number }) => {
+const GateCard = ({ gate }: { gate: GateTelemetry }) => {
   const TrendIcon = gate.trend === 'rising' ? TrendingUp : gate.trend === 'falling' ? TrendingDown : Minus;
   const trendColor =
     gate.trend === 'rising'
-      ? 'text-cyber-red'
+      ? 'text-red-600'
       : gate.trend === 'falling'
-      ? 'text-cyber-green'
+      ? 'text-emerald-600'
       : 'text-slate-400';
-  const glow =
+
+  const barColor =
     gate.status === 'critical'
-      ? 'red'
+      ? 'bg-red-500'
       : gate.status === 'high'
-      ? 'amber'
-      : gate.status === 'low'
-      ? 'teal'
-      : 'none';
+      ? 'bg-amber-500'
+      : gate.status === 'moderate'
+      ? 'bg-indigo-500'
+      : 'bg-emerald-500';
 
   return (
-    <GlassPanel
-      glow={glow as 'red' | 'amber' | 'teal' | 'none'}
-      noPadding
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.05 }}
-      className="p-4 hover:border-cyber-teal/40 transition-all duration-300 cursor-default"
-    >
+    <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm hover:border-slate-300 transition-all">
       <div className="flex items-start gap-3">
         <CapacityRing percentage={gate.percentage} status={gate.status} />
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2 mb-1">
-            <h3 className="font-body font-semibold text-white text-sm leading-tight truncate">
-              {gate.name}
-            </h3>
+            <h3 className="font-semibold text-slate-900 text-sm truncate">{gate.name}</h3>
             <StatusBadge status={gate.status} size="sm" pulse={gate.status === 'critical'} />
           </div>
-          <p className="font-mono text-slate-500 text-xs mb-2 truncate">{gate.location}</p>
-          <div className="flex items-center gap-3">
-            <span className="font-mono text-xs text-slate-400">
-              <span className="text-white font-semibold">{gate.current.toLocaleString()}</span>
-              <span className="text-slate-600">/{gate.capacity.toLocaleString()}</span>
+          <p className="text-xs text-slate-500 mb-2 truncate">{gate.location}</p>
+          <div className="flex items-center justify-between text-xs">
+            <span className="text-slate-600 font-medium">
+              {gate.current.toLocaleString()} / <span className="text-slate-400">{gate.capacity.toLocaleString()}</span>
             </span>
-            <div className={`flex items-center gap-1 ${trendColor}`}>
+            <div className={`flex items-center gap-1 font-semibold ${trendColor}`}>
               <TrendIcon className="w-3 h-3" />
-              <span className="font-mono text-xs capitalize">{gate.trend}</span>
+              <span className="capitalize">{gate.trend}</span>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="mt-3 h-1 bg-cyber-blue rounded-full overflow-hidden">
-        <motion.div
-          className="h-full rounded-full"
-          style={{
-            background:
-              gate.status === 'critical'
-                ? '#FF3B5C'
-                : gate.status === 'high'
-                ? '#FFB800'
-                : gate.status === 'moderate'
-                ? '#7B61FF'
-                : gate.status === 'low'
-                ? '#00D4C8'
-                : '#00FF87',
-            boxShadow: '0 0 6px currentColor',
-          }}
-          initial={{ width: 0 }}
-          animate={{ width: `${gate.percentage}%` }}
-          transition={{ duration: 0.8, delay: index * 0.05 }}
-        />
+      <div className="mt-3 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+        <div className={`h-full rounded-full ${barColor}`} style={{ width: `${gate.percentage}%` }} />
       </div>
-    </GlassPanel>
+    </div>
   );
 };
 
 const FacilityRow = ({ fac }: { fac: FacilityTelemetry }) => {
-  const typeIcon = fac.type === 'restroom' ? '🚻' : fac.type === 'concession' ? '🍔' : fac.type === 'medical' ? '🏥' : '🚗';
+  const typeIcon = fac.type === 'restroom' ? '🚻' : fac.type === 'concession' ? '🍔' : fac.type === 'medical' ? '🏥' : '🅿️';
 
   return (
-    <div
-      className={`flex items-center gap-3 p-3 rounded-lg border transition-all duration-200 ${
-        fac.operationalStatus === 'overloaded'
-          ? 'border-cyber-red/30 bg-cyber-red/5'
-          : fac.operationalStatus === 'busy'
-          ? 'border-cyber-amber/30 bg-cyber-amber/5'
-          : 'border-glass-border/50 bg-cyber-blue/20'
-      }`}
-    >
-      <span className="text-xl flex-shrink-0">{typeIcon}</span>
+    <div className="flex items-center gap-3 p-3 rounded-lg border border-slate-100 bg-slate-50/50 hover:bg-slate-50 transition-colors">
+      <span className="text-lg flex-shrink-0">{typeIcon}</span>
       <div className="flex-1 min-w-0">
-        <p className="font-body text-sm text-white font-medium truncate">{fac.name}</p>
-        <p className="font-mono text-xs text-slate-500">
-          {fac.zone} · Queue: <span className="text-slate-300">{fac.queueLength}</span>
+        <p className="text-sm font-semibold text-slate-900 truncate">{fac.name}</p>
+        <p className="text-xs text-slate-500">
+          {fac.zone} &bull; Queue: <span className="font-semibold text-slate-700">{fac.queueLength}</span>
         </p>
       </div>
       <div className="flex flex-col items-end gap-1">
@@ -141,35 +102,41 @@ const FacilityRow = ({ fac }: { fac: FacilityTelemetry }) => {
           status={fac.operationalStatus === 'overloaded' ? 'critical' : fac.operationalStatus === 'busy' ? 'warning' : 'normal'}
           label={fac.operationalStatus.toUpperCase()}
           size="sm"
-          pulse={fac.operationalStatus === 'overloaded'}
         />
-        <span className="font-mono text-xs text-slate-400">{fac.occupancyPercentage}%</span>
+        <span className="text-xs font-semibold text-slate-600">{fac.occupancyPercentage}% full</span>
       </div>
     </div>
   );
 };
 
 const SecurityZoneIndicator = ({ zone }: { zone: SecurityZone }) => {
-  const colors = {
-    red: { border: 'border-cyber-red/50', bg: 'bg-cyber-red/10', text: 'text-cyber-red', dot: 'bg-cyber-red' },
-    orange: { border: 'border-cyber-amber/50', bg: 'bg-cyber-amber/10', text: 'text-cyber-amber', dot: 'bg-cyber-amber' },
-    yellow: { border: 'border-yellow-500/50', bg: 'bg-yellow-500/10', text: 'text-yellow-400', dot: 'bg-yellow-500' },
-    green: { border: 'border-cyber-green/50', bg: 'bg-cyber-green/10', text: 'text-cyber-green', dot: 'bg-cyber-green' },
+  const badgeStyles = {
+    red: 'bg-red-50 text-red-700 border-red-200',
+    orange: 'bg-amber-50 text-amber-700 border-amber-200',
+    yellow: 'bg-yellow-50 text-yellow-700 border-yellow-200',
+    green: 'bg-emerald-50 text-emerald-700 border-emerald-200',
   };
-  const c = colors[zone.riskLevel];
 
   return (
-    <div className={`flex items-center gap-3 p-2.5 rounded-lg border ${c.border} ${c.bg}`}>
-      <div className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${c.dot} ${zone.riskLevel === 'red' ? 'animate-pulse' : ''}`} />
+    <div className="flex items-center gap-3 p-3 rounded-lg border border-slate-100 bg-white">
+      <div
+        className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${
+          zone.riskLevel === 'red' ? 'bg-red-500 animate-ping' : zone.riskLevel === 'orange' ? 'bg-amber-500' : 'bg-emerald-500'
+        }`}
+      />
       <div className="flex-1 min-w-0">
-        <p className="font-body text-xs text-white font-medium truncate">{zone.name}</p>
-        <p className="font-mono text-xs text-slate-500">
-          {zone.crowdDensity} p/m² · {zone.patrolUnits} units
+        <p className="text-sm font-semibold text-slate-900 truncate">{zone.name}</p>
+        <p className="text-xs text-slate-500">
+          {zone.crowdDensity} p/m² &bull; {zone.patrolUnits} patrols on site
         </p>
       </div>
       <div className="text-right">
-        <p className={`font-mono text-xs font-bold ${c.text} uppercase`}>{zone.riskLevel}</p>
-        {zone.incidentCount > 0 && <p className="font-mono text-xs text-cyber-red">{zone.incidentCount} incidents</p>}
+        <span className={`px-2 py-0.5 rounded text-[11px] font-bold border uppercase ${badgeStyles[zone.riskLevel]}`}>
+          {zone.riskLevel}
+        </span>
+        {zone.incidentCount > 0 && (
+          <p className="text-[11px] text-red-600 font-semibold mt-0.5">{zone.incidentCount} incidents</p>
+        )}
       </div>
     </div>
   );
@@ -180,98 +147,96 @@ export const TelemetryGrid = () => {
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        {[
-          {
-            label: 'Total Occupancy',
-            value: `${telemetry.overallPercentage}%`,
-            sub: `${telemetry.currentOccupancy.toLocaleString()} / ${telemetry.totalCapacity.toLocaleString()}`,
-            color: 'text-cyber-teal',
-            icon: Gauge,
-          },
-          {
-            label: 'Active Incidents',
-            value: telemetry.activeIncidents,
-            sub: 'Across all zones',
-            color: telemetry.activeIncidents > 5 ? 'text-cyber-red' : 'text-cyber-amber',
-            icon: AlertTriangle,
-          },
-          {
-            label: 'Medical Units',
-            value: telemetry.medicalUnitsDeployed,
-            sub: 'Deployed on-site',
-            color: 'text-cyber-green',
-            icon: () => <span className="text-lg">🏥</span>,
-          },
-          {
-            label: 'Temperature',
-            value: `${telemetry.weatherConditions.temperature}°C`,
-            sub: telemetry.weatherConditions.condition,
-            color: 'text-cyber-amber',
-            icon: () => <span className="text-lg">🌤️</span>,
-          },
-        ].map((stat, i) => (
-          <motion.div
-            key={stat.label}
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: i * 0.08 }}
-            className="glass-panel p-4 text-center"
-          >
-            <p className="font-body text-xs text-slate-500 mb-1">{stat.label}</p>
-            <p className={`font-display text-2xl font-bold ${stat.color} mb-0.5`}>{stat.value}</p>
-            <p className="font-mono text-xs text-slate-600">{stat.sub}</p>
-          </motion.div>
-        ))}
+      {/* Top metrics summary */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+          <div className="flex items-center justify-between text-slate-500 text-xs font-semibold uppercase tracking-wider mb-2">
+            <span>Total Attendance</span>
+            <Users className="w-4 h-4 text-blue-600" />
+          </div>
+          <p className="text-2xl font-bold text-slate-900">{telemetry.overallPercentage}%</p>
+          <p className="text-xs text-slate-500 mt-1">
+            {telemetry.currentOccupancy.toLocaleString()} / {telemetry.totalCapacity.toLocaleString()}
+          </p>
+        </div>
+
+        <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+          <div className="flex items-center justify-between text-slate-500 text-xs font-semibold uppercase tracking-wider mb-2">
+            <span>Active Incidents</span>
+            <AlertTriangle className={`w-4 h-4 ${telemetry.activeIncidents > 4 ? 'text-red-500' : 'text-amber-500'}`} />
+          </div>
+          <p className={`text-2xl font-bold ${telemetry.activeIncidents > 4 ? 'text-red-600' : 'text-slate-900'}`}>
+            {telemetry.activeIncidents}
+          </p>
+          <p className="text-xs text-slate-500 mt-1">Across all concourse zones</p>
+        </div>
+
+        <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+          <div className="flex items-center justify-between text-slate-500 text-xs font-semibold uppercase tracking-wider mb-2">
+            <span>Medical Units</span>
+            <HeartPulse className="w-4 h-4 text-emerald-600" />
+          </div>
+          <p className="text-2xl font-bold text-slate-900">{telemetry.medicalUnitsDeployed}</p>
+          <p className="text-xs text-slate-500 mt-1">Stations staffed &amp; equipped</p>
+        </div>
+
+        <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+          <div className="flex items-center justify-between text-slate-500 text-xs font-semibold uppercase tracking-wider mb-2">
+            <span>Pitch Weather</span>
+            <Thermometer className="w-4 h-4 text-amber-500" />
+          </div>
+          <p className="text-2xl font-bold text-slate-900">{telemetry.weatherConditions.temperature}°C</p>
+          <p className="text-xs text-slate-500 mt-1">{telemetry.weatherConditions.condition}</p>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        {/* Main Gates Section */}
         <div className="xl:col-span-2 space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="font-display text-white font-semibold text-base tracking-wide flex items-center gap-2">
-              <div className="w-1 h-5 bg-teal-gradient rounded-full" />
-              GATE TELEMETRY
-              <span className="font-mono text-cyber-teal text-xs">({telemetry.gates.length} active)</span>
-            </h2>
+            <div>
+              <h2 className="text-base font-bold text-slate-900">Gate Ingress Monitoring</h2>
+              <p className="text-xs text-slate-500">Live turnstile throughput and queue volume</p>
+            </div>
             <button
               type="button"
               onClick={refreshTelemetry}
-              className="flex items-center gap-1.5 text-xs text-cyber-teal hover:text-white transition-colors font-mono border border-cyber-teal/30 hover:border-cyber-teal/60 rounded-lg px-3 py-1.5"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
             >
-              <RefreshCw className="w-3 h-3" />
-              REFRESH
+              <RefreshCw className="w-3.5 h-3.5 text-slate-500" />
+              <span>Refresh Sensor Data</span>
             </button>
           </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {telemetry.gates.map((gate, i) => (
-              <GateCard key={gate.id} gate={gate} index={i} />
+            {telemetry.gates.map((gate) => (
+              <GateCard key={gate.id} gate={gate} />
             ))}
           </div>
         </div>
 
+        {/* Facilities & Security Section */}
         <div className="space-y-6">
-          <div className="space-y-3">
-            <h2 className="font-display text-white font-semibold text-base tracking-wide flex items-center gap-2">
-              <div className="w-1 h-5 bg-amber-gradient rounded-full" />
-              FACILITIES
+          <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-3">
+            <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider text-slate-500">
+              Concourse Facilities
             </h2>
-            <GlassPanel noPadding className="p-3 space-y-2">
-              {telemetry.facilities.slice(0, 6).map((fac) => (
+            <div className="space-y-2">
+              {telemetry.facilities.slice(0, 5).map((fac) => (
                 <FacilityRow key={fac.id} fac={fac} />
               ))}
-            </GlassPanel>
+            </div>
           </div>
 
-          <div className="space-y-3">
-            <h2 className="font-display text-white font-semibold text-base tracking-wide flex items-center gap-2">
-              <div className="w-1 h-5 bg-red-gradient rounded-full" />
-              SECURITY ZONES
+          <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-3">
+            <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider text-slate-500">
+              Security Patrol Sectors
             </h2>
-            <GlassPanel noPadding className="p-3 space-y-2">
+            <div className="space-y-2">
               {telemetry.securityZones.map((zone) => (
                 <SecurityZoneIndicator key={zone.id} zone={zone} />
               ))}
-            </GlassPanel>
+            </div>
           </div>
         </div>
       </div>

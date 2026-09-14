@@ -1,48 +1,39 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Brain, Zap, AlertTriangle, CheckCircle, Clock, ChevronDown, ChevronUp, Sparkles } from 'lucide-react';
+import { Shield, Zap, AlertTriangle, CheckCircle, Clock, ChevronDown, ChevronUp, RefreshCw, Layers } from 'lucide-react';
 import { useAppStore } from '../../store/useAppStore';
 import { analyzeCrowd, generateAlerts } from '../../services/geminiService';
-import { GlassPanel } from '../ui/GlassPanel';
-import { SkeletonLoader } from '../ui/SkeletonLoader';
 import type { AnalysisStep } from '../../types';
 
 const PRIORITY_CONFIG = {
-  immediate: { glow: 'red' as const, icon: Zap, color: 'text-cyber-red', border: 'border-cyber-red/30', bg: 'bg-cyber-red/5' },
-  'short-term': { glow: 'amber' as const, icon: AlertTriangle, color: 'text-cyber-amber', border: 'border-cyber-amber/30', bg: 'bg-cyber-amber/5' },
-  monitoring: { glow: 'teal' as const, icon: Clock, color: 'text-cyber-teal', border: 'border-cyber-teal/30', bg: 'bg-cyber-teal/5' },
+  immediate: { icon: Zap, color: 'text-red-700', border: 'border-red-200', bg: 'bg-red-50/60', badge: 'bg-red-100 text-red-800' },
+  'short-term': { icon: AlertTriangle, color: 'text-amber-800', border: 'border-amber-200', bg: 'bg-amber-50/60', badge: 'bg-amber-100 text-amber-900' },
+  monitoring: { icon: Clock, color: 'text-blue-700', border: 'border-blue-200', bg: 'bg-blue-50/60', badge: 'bg-blue-100 text-blue-800' },
 };
 
 const StrategyStep = ({ step, index }: { step: AnalysisStep; index: number }) => {
   const [expanded, setExpanded] = useState(index === 0);
-  const cfg = PRIORITY_CONFIG[step.priority];
+  const cfg = PRIORITY_CONFIG[step.priority] ?? PRIORITY_CONFIG['short-term'];
   const Icon = cfg.icon;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, x: -20 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ delay: 0.3 + index * 0.15 }}
-      className={`rounded-xl border ${cfg.border} ${cfg.bg} overflow-hidden`}
-    >
+    <div className={`rounded-xl border ${cfg.border} ${cfg.bg} overflow-hidden transition-colors`}>
       <button
         type="button"
         onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center gap-4 p-4 text-left hover:bg-white/2 transition-colors"
+        className="w-full flex items-center gap-3 p-4 text-left hover:bg-black/[0.02] transition-colors"
       >
-        <div
-          className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
-            cfg.glow === 'red' ? 'bg-cyber-red/20' : cfg.glow === 'amber' ? 'bg-cyber-amber/20' : 'bg-cyber-teal/20'
-          }`}
-        >
-          <Icon className={`w-5 h-5 ${cfg.color}`} />
+        <div className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 bg-white border ${cfg.border}`}>
+          <Icon className={`w-4 h-4 ${cfg.color}`} />
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-0.5">
-            <span className={`font-mono text-xs font-bold ${cfg.color}`}>STEP {step.step}</span>
-            <span className="font-mono text-xs text-slate-500 uppercase">[{step.priority}]</span>
+            <span className={`text-xs font-bold ${cfg.color}`}>STEP {step.step}</span>
+            <span className={`text-[10px] uppercase font-semibold px-2 py-0.5 rounded-full ${cfg.badge}`}>
+              {step.priority}
+            </span>
           </div>
-          <p className="font-body font-semibold text-white text-sm">{step.title}</p>
+          <p className="font-semibold text-slate-900 text-sm">{step.title}</p>
         </div>
         {expanded ? (
           <ChevronUp className="w-4 h-4 text-slate-400 flex-shrink-0" />
@@ -57,62 +48,25 @@ const StrategyStep = ({ step, index }: { step: AnalysisStep; index: number }) =>
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.25 }}
+            transition={{ duration: 0.2 }}
             className="overflow-hidden"
           >
-            <div className="px-4 pb-4 space-y-3 border-t border-white/5 pt-3">
+            <div className="px-4 pb-4 space-y-3 border-t border-slate-200/60 pt-3 bg-white/60">
               <div>
-                <p className="font-mono text-xs text-slate-500 mb-1 uppercase tracking-wider">Action</p>
-                <p className="font-body text-sm text-slate-200 leading-relaxed">{step.action}</p>
+                <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Operational Protocol</p>
+                <p className="text-sm text-slate-800 leading-relaxed">{step.action}</p>
               </div>
               <div>
-                <p className="font-mono text-xs text-slate-500 mb-1 uppercase tracking-wider">Rationale (XAI)</p>
-                <p className="font-body text-sm text-slate-400 leading-relaxed italic">{step.rationale}</p>
+                <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Impact &amp; Ingress Rationale</p>
+                <p className="text-sm text-slate-600 leading-relaxed">{step.rationale}</p>
               </div>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
-    </motion.div>
+    </div>
   );
 };
-
-const AnalysisSkeleton = () => (
-  <GlassPanel glow="teal" className="space-y-6">
-    <div className="flex items-center gap-3">
-      <div className="w-10 h-10 rounded-lg bg-cyber-teal/20 animate-pulse flex items-center justify-center">
-        <Brain className="w-5 h-5 text-cyber-teal animate-pulse" />
-      </div>
-      <div className="space-y-2 flex-1">
-        <div className="h-4 w-1/3 bg-cyber-teal/20 rounded animate-pulse" />
-        <div className="h-3 w-1/2 bg-cyber-blue/50 rounded animate-pulse" />
-      </div>
-    </div>
-    <div className="space-y-2">
-      <div className="h-3 text-xs font-mono text-cyber-teal/60 font-semibold tracking-wider">ANALYZING TELEMETRY DATA...</div>
-      <SkeletonLoader lines={3} height="h-3" />
-    </div>
-    {[0, 1, 2].map((i) => (
-      <div key={i} className="rounded-xl border border-glass-border p-4 space-y-2">
-        <div className="h-4 w-1/4 bg-cyber-blue/50 rounded animate-pulse" />
-        <SkeletonLoader lines={2} height="h-3" />
-      </div>
-    ))}
-    <div className="flex items-center justify-center gap-3 py-2">
-      <div className="flex gap-1">
-        {[0, 0.2, 0.4].map((delay, i) => (
-          <motion.div
-            key={i}
-            className="w-2 h-2 rounded-full bg-cyber-teal"
-            animate={{ opacity: [0.3, 1, 0.3] }}
-            transition={{ repeat: Infinity, duration: 1.2, delay }}
-          />
-        ))}
-      </div>
-      <span className="font-mono text-xs text-cyber-teal">Gemini AI reasoning...</span>
-    </div>
-  </GlassPanel>
-);
 
 export const AIAnalysisPanel = () => {
   const {
@@ -139,7 +93,7 @@ export const AIAnalysisPanel = () => {
       setCrowdAnalysis(analysis);
       setAiAlerts(alerts);
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Unknown error occurred';
+      const message = err instanceof Error ? err.message : 'Analysis failed. Please retry.';
       setAnalysisError(message);
     } finally {
       setIsAnalyzing(false);
@@ -148,134 +102,134 @@ export const AIAnalysisPanel = () => {
 
   return (
     <div className="space-y-4">
-      {!isAnalyzing && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-          <button
-            type="button"
-            onClick={handleAnalyze}
-            disabled={isAnalyzing}
-            className="group w-full relative overflow-hidden rounded-xl border border-cyber-teal/40 bg-cyber-teal/10 hover:bg-cyber-teal/20 transition-all duration-300 p-4 flex items-center justify-center gap-3 hover:shadow-cyber disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <div className="absolute inset-0 bg-gradient-to-r from-cyber-teal/0 via-cyber-teal/5 to-cyber-teal/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
-            <div className="relative flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-teal-gradient flex items-center justify-center shadow-cyber">
-                <Brain className="w-5 h-5 text-cyber-dark" />
-              </div>
-              <div className="text-left">
-                <p className="font-display text-white font-bold text-sm tracking-wide">
-                  AI CROWD ANALYSIS
-                </p>
-                <p className="font-mono text-cyber-teal text-xs">Powered by Gemini 2.5 Flash · XAI Reasoning</p>
-              </div>
-              <Sparkles className="w-5 h-5 text-cyber-teal ml-auto animate-pulse" />
+      {!isAnalyzing && !crowdAnalysis && (
+        <button
+          type="button"
+          onClick={handleAnalyze}
+          className="w-full rounded-xl border border-blue-200 bg-blue-50/70 hover:bg-blue-100/70 transition-all p-5 flex items-center justify-between gap-4 text-left shadow-sm group"
+        >
+          <div className="flex items-center gap-3.5">
+            <div className="w-11 h-11 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-sm flex-shrink-0">
+              <Layers className="w-5 h-5" />
             </div>
-          </button>
-        </motion.div>
+            <div>
+              <p className="font-bold text-slate-900 text-sm sm:text-base">
+                Run Crowd Dynamics &amp; Bottleneck Assessment
+              </p>
+              <p className="text-xs text-slate-600 mt-0.5">
+                Evaluates gate turnstile throughput, concourse density, and recommended redistribution routes
+              </p>
+            </div>
+          </div>
+          <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-semibold group-hover:bg-blue-700 transition-colors">
+            <span>Analyze Now</span>
+          </div>
+        </button>
       )}
 
-      <AnimatePresence>
-        {isAnalyzing && (
-          <motion.div key="skeleton" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <AnalysisSkeleton />
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {isAnalyzing && (
+        <div className="bg-white border border-slate-200 rounded-xl p-8 text-center space-y-4 shadow-sm">
+          <div className="w-10 h-10 border-3 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto" />
+          <div>
+            <p className="font-bold text-slate-900 text-sm">Processing Venue Telemetry...</p>
+            <p className="text-xs text-slate-500 mt-1">Analyzing turnstile velocity, zone capacities, and queue progression</p>
+          </div>
+        </div>
+      )}
 
-      <AnimatePresence>
-        {analysisError && (
-          <motion.div key="error" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
-            <GlassPanel glow="red" className="flex items-start gap-3">
-              <AlertTriangle className="w-5 h-5 text-cyber-red flex-shrink-0 mt-0.5" />
-              <div>
-                <p className="font-display text-cyber-red font-semibold text-sm mb-1">Analysis Failed</p>
-                <p className="font-body text-slate-400 text-sm">{analysisError}</p>
-                <button
-                  type="button"
-                  onClick={handleAnalyze}
-                  className="mt-3 font-mono text-xs text-cyber-teal hover:text-white transition-colors border border-cyber-teal/30 hover:border-cyber-teal rounded px-3 py-1.5"
-                >
-                  RETRY ANALYSIS
-                </button>
-              </div>
-            </GlassPanel>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {analysisError && (
+        <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-start gap-3">
+          <AlertTriangle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <p className="font-bold text-red-900 text-sm">Assessment Error</p>
+            <p className="text-xs text-red-700 mt-1">{analysisError}</p>
+            <button
+              type="button"
+              onClick={handleAnalyze}
+              className="mt-3 text-xs font-semibold text-red-800 bg-white border border-red-300 rounded-lg px-3 py-1.5 hover:bg-red-50 transition-colors"
+            >
+              Retry Assessment
+            </button>
+          </div>
+        </div>
+      )}
 
-      <AnimatePresence>
-        {crowdAnalysis && !isAnalyzing && (
-          <motion.div key="results" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
-            <GlassPanel glow="teal" noPadding className="p-5">
-              <div className="flex items-start justify-between gap-3 mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-teal-gradient flex items-center justify-center shadow-cyber flex-shrink-0">
-                    <Brain className="w-5 h-5 text-cyber-dark" />
-                  </div>
-                  <div>
-                    <p className="font-display text-white font-bold text-sm tracking-wide">GEMINI AI ANALYSIS</p>
-                    <p className="font-mono text-slate-500 text-xs">
-                      Generated {new Date(crowdAnalysis.generatedAt).toLocaleTimeString()}
-                    </p>
-                  </div>
+      {crowdAnalysis && !isAnalyzing && (
+        <div className="space-y-4">
+          <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-4">
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-emerald-100 border border-emerald-200 flex items-center justify-center text-emerald-700 flex-shrink-0">
+                  <Shield className="w-5 h-5" />
                 </div>
-                <CheckCircle className="w-5 h-5 text-cyber-green flex-shrink-0 mt-1" />
+                <div>
+                  <h3 className="font-bold text-slate-900 text-base">Crowd Ingress &amp; Capacity Strategy</h3>
+                  <p className="text-xs text-slate-500">
+                    Updated {new Date(crowdAnalysis.generatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} &bull; Calculated from live gate counters
+                  </p>
+                </div>
               </div>
+              <button
+                type="button"
+                onClick={handleAnalyze}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 text-xs font-semibold text-slate-700 transition-colors"
+              >
+                <RefreshCw className="w-3.5 h-3.5 text-slate-500" />
+                <span>Re-analyze</span>
+              </button>
+            </div>
 
-              <div className="bg-cyber-blue/40 rounded-lg p-4 mb-4">
-                <p className="font-mono text-xs text-cyber-teal mb-2 tracking-wider font-semibold">EXECUTIVE SUMMARY</p>
-                <p className="font-body text-slate-200 text-sm leading-relaxed">{crowdAnalysis.summary}</p>
+            {/* Executive Summary */}
+            <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
+              <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Executive Situation Summary</p>
+              <p className="text-sm text-slate-800 leading-relaxed">{crowdAnalysis.summary}</p>
+            </div>
+
+            {/* Risk Assessment */}
+            <div className="bg-amber-50/70 border border-amber-200 rounded-lg p-4">
+              <div className="flex items-center gap-2 mb-1.5 text-amber-800">
+                <AlertTriangle className="w-4 h-4 text-amber-700" />
+                <p className="text-[11px] font-bold uppercase tracking-wider">Safety Risk Assessment</p>
               </div>
+              <p className="text-sm text-amber-900 leading-relaxed">{crowdAnalysis.riskAssessment}</p>
+            </div>
+          </div>
 
-              <div className="bg-cyber-red/10 border border-cyber-red/20 rounded-lg p-3">
-                <p className="font-mono text-xs text-cyber-red mb-1 tracking-wider font-semibold">RISK ASSESSMENT</p>
-                <p className="font-body text-slate-300 text-sm leading-relaxed">{crowdAnalysis.riskAssessment}</p>
+          {/* Identified Bottlenecks */}
+          {crowdAnalysis.bottlenecks.length > 0 && (
+            <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-3">
+              <div className="flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4 text-red-600" />
+                <h4 className="font-bold text-slate-900 text-sm uppercase tracking-wider">Active Concourse Bottlenecks</h4>
               </div>
-            </GlassPanel>
-
-            <GlassPanel glow="amber" noPadding className="p-5">
-              <p className="font-mono text-xs text-cyber-amber mb-3 tracking-wider font-semibold flex items-center gap-2">
-                <AlertTriangle className="w-4 h-4" />
-                IDENTIFIED BOTTLENECKS
-              </p>
               <ul className="space-y-2">
                 {crowdAnalysis.bottlenecks.map((b, i) => (
-                  <motion.li
-                    key={i}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.1 }}
-                    className="flex items-start gap-2.5"
-                  >
-                    <span className="font-mono text-xs text-cyber-amber font-bold flex-shrink-0 mt-0.5">
-                      {String(i + 1).padStart(2, '0')}
+                  <li key={i} className="flex items-start gap-3 p-2.5 rounded-lg bg-red-50/50 border border-red-100">
+                    <span className="w-5 h-5 rounded-full bg-red-100 text-red-700 text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">
+                      {i + 1}
                     </span>
-                    <p className="font-body text-sm text-slate-300">{b}</p>
-                  </motion.li>
+                    <p className="text-sm text-slate-800">{b}</p>
+                  </li>
                 ))}
               </ul>
-            </GlassPanel>
+            </div>
+          )}
 
-            <div className="space-y-2">
-              <p className="font-display text-white font-semibold text-sm tracking-wide flex items-center gap-2">
-                <div className="w-1 h-4 bg-cyber-purple rounded-full" />
-                AI-GENERATED STRATEGY
-              </p>
+          {/* Prioritized Strategy Steps */}
+          <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-3">
+            <div className="flex items-center gap-2 mb-1">
+              <CheckCircle className="w-4 h-4 text-emerald-600" />
+              <h4 className="font-bold text-slate-900 text-sm uppercase tracking-wider">Prioritized Action Protocol</h4>
+            </div>
+            <div className="space-y-2.5">
               {crowdAnalysis.strategy.map((step, i) => (
                 <StrategyStep key={step.step} step={step} index={i} />
               ))}
             </div>
-
-            <button
-              type="button"
-              onClick={handleAnalyze}
-              className="w-full font-mono text-xs text-slate-500 hover:text-cyber-teal transition-colors border border-glass-border hover:border-cyber-teal/30 rounded-lg py-2.5 flex items-center justify-center gap-2"
-            >
-              <Brain className="w-3 h-3" />
-              RE-ANALYZE WITH LATEST DATA
-            </button>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
+

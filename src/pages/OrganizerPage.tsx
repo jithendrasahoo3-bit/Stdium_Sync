@@ -7,46 +7,46 @@ import { StatusBadge } from '../components/ui/StatusBadge';
 import { StadiumSeatMap } from '../components/stadium/StadiumSeatMap';
 
 const tile = {
-  hidden: { opacity: 0, y: 15 },
-  show: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.05, duration: 0.3, ease: 'easeOut' } }),
+  hidden: { opacity: 0, y: 10 },
+  show: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.04, duration: 0.25 } }),
 };
-
-const COLORS = ['#E06B6B','#AB74C7','#6AB482','#E09255','#E05A47'];
 
 const GateBarTile = ({ index }: { index: number }) => {
   const { telemetry, refreshTelemetry } = useAppStore();
   const TrendIcon = (t: string) => t === 'rising' ? TrendingUp : t === 'falling' ? TrendingDown : Minus;
   return (
-    <motion.div custom={index} variants={tile} initial="hidden" animate="show" className="glass-panel p-5 flex flex-col h-full min-h-[340px] pop-card">
-      <div className="flex items-center justify-between mb-4 border-b border-glass-border/30 pb-2">
-        <h2 className="cmd-section-label text-theme-text-dark flex items-center gap-1.5">
-          <Activity className="w-4 h-4 text-cyber-teal-dim" />
-          GATE TELEMETRY
+    <motion.div custom={index} variants={tile} initial="hidden" animate="show" className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm flex flex-col h-full min-h-[340px]">
+      <div className="flex items-center justify-between mb-4 border-b border-slate-100 pb-2.5">
+        <h2 className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+          <Activity className="w-4 h-4 text-blue-600" />
+          Turnstile Throughput
         </h2>
-        <motion.button onClick={refreshTelemetry} whileHover={{ rotate: 180 }} whileTap={{ scale: 0.95 }} className="text-theme-text-muted hover:text-theme-text-dark p-1 transition-colors">
+        <button onClick={refreshTelemetry} className="text-slate-400 hover:text-slate-700 p-1 transition-colors">
           <RefreshCw className="w-3.5 h-3.5" />
-        </motion.button>
+        </button>
       </div>
       <div className="space-y-3 flex-1 overflow-y-auto pr-1">
-        {telemetry.gates.map((gate, gi) => {
+        {telemetry.gates.map((gate) => {
           const T = TrendIcon(gate.trend);
+          const barColor =
+            gate.status === 'critical' ? 'bg-red-500' :
+            gate.status === 'high' ? 'bg-amber-500' :
+            gate.status === 'moderate' ? 'bg-indigo-500' : 'bg-emerald-500';
+
           return (
-            <div key={gate.id} className="flex items-center gap-2 cursor-default">
-              <div className="w-16 flex-shrink-0">
-                <p className="font-display text-[9px] text-theme-text-dark truncate font-bold">{gate.name.split('(')[0].trim()}</p>
+            <div key={gate.id} className="flex items-center gap-2">
+              <div className="w-20 flex-shrink-0">
+                <p className="text-xs font-semibold text-slate-800 truncate">{gate.name.split('(')[0].trim()}</p>
               </div>
-              <div className="flex-1 h-3 rounded-full overflow-hidden border border-glass-border" style={{ backgroundColor: 'rgba(255,209,209,0.3)' }}>
-                <motion.div className="h-full rounded-full"
-                  style={{ backgroundColor: COLORS[gi % COLORS.length] }}
-                  initial={{ width: 0 }} animate={{ width: `${gate.percentage}%` }}
-                  transition={{ duration: 0.5, delay: gi * 0.04 }} />
+              <div className="flex-1 h-2 rounded-full overflow-hidden bg-slate-100 border border-slate-200">
+                <div className={`h-full rounded-full ${barColor}`} style={{ width: `${gate.percentage}%` }} />
               </div>
               <div className="flex items-center gap-1.5 flex-shrink-0">
-                <T className={`w-3.5 h-3.5 ${gate.trend === 'rising' ? 'text-cyber-red' : gate.trend === 'falling' ? 'text-cyber-green' : 'text-slate-500'}`} />
-                <span className="font-mono text-[10px] font-bold w-8 text-right text-theme-text-dark">
+                <T className={`w-3.5 h-3.5 ${gate.trend === 'rising' ? 'text-red-600' : gate.trend === 'falling' ? 'text-emerald-600' : 'text-slate-400'}`} />
+                <span className="text-xs font-bold w-8 text-right text-slate-800">
                   {gate.percentage}%
                 </span>
-                <StatusBadge status={gate.status} size="sm" pulse={gate.status === 'critical'} />
+                <StatusBadge status={gate.status} size="sm" />
               </div>
             </div>
           );
@@ -58,32 +58,33 @@ const GateBarTile = ({ index }: { index: number }) => {
 
 const SecurityTile = ({ index }: { index: number }) => {
   const { telemetry } = useAppStore();
-  const cfgs: Record<string, { dot: string; text: string; border: string; bg: string }> = {
-    red: { dot: 'bg-cyber-red', text: 'text-cyber-red', border: 'border-cyber-red/35', bg: 'bg-cyber-red/5' },
-    orange: { dot: 'bg-cyber-amber', text: 'text-cyber-amber', border: 'border-cyber-amber/35', bg: 'bg-cyber-amber/5' },
-    yellow: { dot: 'bg-yellow-500', text: 'text-yellow-600', border: 'border-yellow-500/35', bg: 'bg-yellow-500/5' },
-    green: { dot: 'bg-cyber-green', text: 'text-cyber-green', border: 'border-cyber-green/35', bg: 'bg-cyber-green/5' },
-  };
   return (
-    <motion.div custom={index} variants={tile} initial="hidden" animate="show" className="glass-panel p-5 flex flex-col h-full min-h-[220px] pop-card">
-      <h2 className="font-display text-theme-text-dark font-semibold text-xs tracking-wider flex items-center gap-1.5 mb-4 border-b border-glass-border/30 pb-2">
-        <Shield className="w-4 h-4 text-cyber-teal-dim" />
-        SECURITY ZONES
+    <motion.div custom={index} variants={tile} initial="hidden" animate="show" className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm flex flex-col h-full min-h-[220px]">
+      <h2 className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5 mb-4 border-b border-slate-100 pb-2.5">
+        <Shield className="w-4 h-4 text-blue-600" />
+        Security Sectors
       </h2>
       <div className="space-y-2 flex-1">
         {telemetry.securityZones.map(z => {
-          const c = cfgs[z.riskLevel] ?? cfgs.green;
+          const isCrit = z.riskLevel === 'red';
+          const isWarn = z.riskLevel === 'orange';
           return (
-            <div key={z.id} className={`flex items-center gap-3 p-2 rounded-lg border ${c.border} ${c.bg} cursor-default`}>
-              <div className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${c.dot} ${z.riskLevel === 'red' ? 'animate-pulse' : ''}`} />
+            <div key={z.id} className={`flex items-center gap-3 p-2 rounded-lg border ${
+              isCrit ? 'bg-red-50/60 border-red-200' : isWarn ? 'bg-amber-50/60 border-amber-200' : 'bg-slate-50 border-slate-200'
+            }`}>
+              <div className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${
+                isCrit ? 'bg-red-600 animate-ping' : isWarn ? 'bg-amber-500' : 'bg-emerald-500'
+              }`} />
               <div className="flex-1 min-w-0">
-                <p className="font-body text-xs text-theme-text-dark font-bold truncate">{z.name}</p>
-                <p className="font-mono text-[9px] text-slate-500">{z.crowdDensity}p/m² · {z.patrolUnits} units</p>
+                <p className="text-xs font-semibold text-slate-900 truncate">{z.name}</p>
+                <p className="text-[10px] text-slate-500">{z.crowdDensity} p/m² &bull; {z.patrolUnits} officers</p>
               </div>
               <div className="text-right flex-shrink-0">
-                <p className={`font-display text-[9px] font-bold ${c.text} uppercase`}>{z.riskLevel}</p>
+                <span className={`text-[10px] font-bold uppercase px-1.5 py-0.5 rounded border ${
+                  isCrit ? 'bg-red-100 text-red-800 border-red-200' : isWarn ? 'bg-amber-100 text-amber-800 border-amber-200' : 'bg-emerald-100 text-emerald-800 border-emerald-200'
+                }`}>{z.riskLevel}</span>
                 {z.incidentCount > 0 && (
-                  <p className="font-mono text-[9px] text-cyber-red font-bold animate-pulse">
+                  <p className="text-[10px] text-red-600 font-bold mt-0.5">
                     {z.incidentCount} active
                   </p>
                 )}
@@ -100,27 +101,28 @@ const FacilitiesTile = ({ index }: { index: number }) => {
   const { telemetry } = useAppStore();
   const typeLabel: Record<string, string> = { restroom: 'WC', concession: 'F&B', medical: 'MED', parking: 'PKG' };
   return (
-    <motion.div custom={index} variants={tile} initial="hidden" animate="show" className="glass-panel p-5 flex flex-col h-full min-h-[220px] pop-card">
-      <h2 className="font-display text-theme-text-dark font-semibold text-xs tracking-wider flex items-center gap-1.5 mb-4 border-b border-glass-border/30 pb-2">
-        <Activity className="w-4 h-4 text-cyber-teal-dim" />
-        FACILITIES STATUS
+    <motion.div custom={index} variants={tile} initial="hidden" animate="show" className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm flex flex-col h-full min-h-[220px]">
+      <h2 className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5 mb-4 border-b border-slate-100 pb-2.5">
+        <Activity className="w-4 h-4 text-blue-600" />
+        Concourse Services
       </h2>
       <div className="space-y-2 flex-1 overflow-y-auto pr-1">
-        {telemetry.facilities.slice(0, 8).map((f, fi) => (
-          <div key={f.id} className="flex items-center gap-2 cursor-default">
-            <span className="font-mono text-[9px] font-bold text-slate-500 w-8 border border-glass-border px-1 py-0.5 rounded text-center bg-cyber-blue/30">
+        {telemetry.facilities.slice(0, 8).map((f) => (
+          <div key={f.id} className="flex items-center gap-2">
+            <span className="text-[10px] font-bold text-slate-600 w-8 border border-slate-200 px-1 py-0.5 rounded text-center bg-slate-100">
               {typeLabel[f.type] ?? 'SYS'}
             </span>
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between mb-0.5">
-                <p className="font-body text-xs text-theme-text-dark truncate font-bold">{f.name}</p>
-                <span className="font-mono text-[9px] font-bold text-theme-text-muted">
+                <p className="text-xs font-semibold text-slate-900 truncate">{f.name}</p>
+                <span className="text-[10px] font-bold text-slate-500">
                   {f.occupancyPercentage}%
                 </span>
               </div>
-              <div className="h-2 rounded-full overflow-hidden border border-glass-border" style={{ backgroundColor: 'rgba(255,209,209,0.3)' }}>
-                <div className="h-full rounded-full"
-                  style={{ width: `${f.occupancyPercentage}%`, backgroundColor: COLORS[fi % COLORS.length] }} />
+              <div className="h-1.5 rounded-full overflow-hidden bg-slate-100 border border-slate-200">
+                <div
+                  className={`h-full rounded-full ${f.occupancyPercentage > 85 ? 'bg-red-500' : f.occupancyPercentage > 60 ? 'bg-amber-500' : 'bg-blue-500'}`}
+                  style={{ width: `${f.occupancyPercentage}%` }} />
               </div>
             </div>
             <StatusBadge status={f.operationalStatus === 'overloaded' ? 'critical' : f.operationalStatus === 'busy' ? 'warning' : 'normal'}
@@ -136,19 +138,17 @@ const LiveTicker = () => {
   const { telemetry } = useAppStore();
   const critical = telemetry.gates.filter(g => g.status === 'critical');
   return (
-    <div className="glass-panel p-3.5 flex items-center gap-3 overflow-hidden pop-card bg-[#FFE3E1]/20">
-      <div className="flex items-center gap-1.5 flex-shrink-0 border-r border-glass-border pr-3">
-        <Radio className="w-4 h-4 text-cyber-red animate-pulse" />
-        <span className="font-display text-cyber-red text-[10px] font-bold tracking-widest uppercase">LIVE VENUE FEEDS</span>
+    <div className="bg-white border border-slate-200 rounded-xl p-3 flex items-center gap-3 overflow-hidden shadow-sm">
+      <div className="flex items-center gap-1.5 flex-shrink-0 border-r border-slate-200 pr-3">
+        <Radio className="w-4 h-4 text-red-600 animate-pulse" />
+        <span className="text-[11px] font-bold text-red-700 tracking-wider uppercase">Live Operations Ticker</span>
       </div>
       <div className="flex-1 overflow-hidden">
-        <motion.div animate={{ x: ['100%', '-100%'] }} transition={{ repeat: Infinity, duration: 25, ease: 'linear' }}
-          className="whitespace-nowrap font-mono text-[11px] font-semibold text-theme-text-dark"
-        >
+        <div className="whitespace-nowrap text-xs text-slate-700 font-medium">
           {critical.length > 0
-            ? critical.map(g => `CRITICAL QUEUE WAIT TIMES DETECTED AT: ${g.name.toUpperCase()} (${g.percentage}% FULL) · PLEASE ADJUST SECURITY LANES `).join(' · ')
-            : `All gate interfaces operational · Venue Capacity at ${telemetry.overallPercentage}% (${telemetry.currentOccupancy.toLocaleString()} active spectators) · Current weather is ${telemetry.weatherConditions.temperature}°C, ${telemetry.weatherConditions.condition}.`}
-        </motion.div>
+            ? critical.map(g => `QUEUE ALERT: ${g.name.toUpperCase()} (${g.percentage}% FULL) - ADJUST INGRESS LANES`).join(' • ')
+            : `All gate interfaces running within operational velocity • Overall Stadium Load: ${telemetry.overallPercentage}% (${telemetry.currentOccupancy.toLocaleString()} spectators inside) • Weather: ${telemetry.weatherConditions.temperature}°C, ${telemetry.weatherConditions.condition}.`}
+        </div>
       </div>
     </div>
   );
@@ -157,26 +157,24 @@ const LiveTicker = () => {
 const StadiumStatTile = ({ index }: { index: number }) => {
   const { telemetry } = useAppStore();
   const stats = [
-    { value: `${telemetry.overallPercentage}%`, label: 'CAPACITY', color: 'var(--theme-primary)' },
-    { value: telemetry.currentOccupancy.toLocaleString(), label: 'FANS INSIDE', color: 'var(--theme-primary)' },
-    { value: telemetry.activeIncidents, label: 'ACTIVE INCIDENTS', color: '#E05A47' },
-    { value: telemetry.medicalUnitsDeployed, label: 'MED UNITS', color: '#6AB482' },
+    { value: `${telemetry.overallPercentage}%`, label: 'CAPACITY OCCUPIED', color: 'text-blue-600' },
+    { value: telemetry.currentOccupancy.toLocaleString(), label: 'FANS IN VENUE', color: 'text-slate-900' },
+    { value: telemetry.activeIncidents, label: 'ACTIVE INCIDENTS', color: telemetry.activeIncidents > 3 ? 'text-red-600' : 'text-slate-900' },
+    { value: telemetry.medicalUnitsDeployed, label: 'MED UNITS ON DUTY', color: 'text-emerald-600' },
   ];
   return (
-    <motion.div custom={index} variants={tile} initial="hidden" animate="show" className="glass-panel p-5 pop-card">
-      <div className="flex items-center gap-1.5 mb-4 border-b border-glass-border/30 pb-2">
-        <Activity className="w-4 h-4 theme-text-color" />
-        <h2 className="cmd-section-label text-theme-text-dark flex items-center gap-1.5">
-          <Activity className="w-4 h-4 theme-text-color" /> VENUE STATISTICS OVERVIEW
+    <motion.div custom={index} variants={tile} initial="hidden" animate="show" className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+      <div className="flex items-center gap-2 mb-4 border-b border-slate-100 pb-2.5">
+        <Activity className="w-4 h-4 text-blue-600" />
+        <h2 className="text-xs font-bold uppercase tracking-wider text-slate-700">
+          Tournament Venue Summary
         </h2>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {stats.map((s) => (
-          <div key={s.label}
-            className="rounded-lg border p-3 text-center cursor-default bg-glass-bg border-glass-border"
-          >
-            <p className="stat-value-display text-2xl" style={{ color: s.color }}>{s.value}</p>
-            <p className="cmd-section-label text-slate-500 mt-1">{s.label}</p>
+          <div key={s.label} className="rounded-lg border border-slate-200/80 bg-slate-50/70 p-3.5 text-center">
+            <p className={`text-2xl font-extrabold ${s.color}`}>{s.value}</p>
+            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mt-1">{s.label}</p>
           </div>
         ))}
       </div>
@@ -187,41 +185,48 @@ const StadiumStatTile = ({ index }: { index: number }) => {
 export const OrganizerPage = () => {
   const { userProfile, telemetry } = useAppStore();
   const [activeTab, setActiveTab] = useState<'dashboard' | 'seatmap'>('dashboard');
+
   return (
-    <motion.div data-page="organizer" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
-      {/* Executive Header */}
+    <div data-page="organizer" className="space-y-4">
+      {/* Header */}
       <div className="flex items-center gap-3 justify-between flex-wrap">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-glass-bg flex items-center justify-center flex-shrink-0 border border-glass-border theme-border-color">
-            <Shield className="w-5 h-5 theme-text-color" />
+          <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-xs">
+            <Shield className="w-5 h-5" />
           </div>
           <div>
-            <h1 className="cmd-title text-xl text-theme-text-dark neon-text">COMMAND CENTER</h1>
-            <p className="cmd-section-label text-theme-text-muted mt-0.5">
-              Welcome, {userProfile?.name} · Enterprise Operations Console
+            <h1 className="text-xl font-bold text-slate-900">Venue Command Center</h1>
+            <p className="text-xs text-slate-500">
+              Operations Director: {userProfile?.name} &bull; FIFA World Cup 2026 Telemetry
             </p>
           </div>
         </div>
+
         <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1.5 rounded-lg border px-3 py-1.5 bg-glass-bg border-glass-border">
-            <span className="w-2 h-2 rounded-full bg-cyber-green animate-pulse" />
-            <span className="font-display text-cyber-green text-[10px] font-bold">{telemetry.overallPercentage}% VENUE LOAD</span>
+          <div className="flex items-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5">
+            <span className="w-2 h-2 rounded-full bg-emerald-500" />
+            <span className="text-xs font-bold text-emerald-800">{telemetry.overallPercentage}% VENUE LOAD</span>
           </div>
+
           {/* Tab switcher */}
-          <div className="flex bg-cyber-blue/20 rounded-lg p-1 border border-glass-border">
-            <button onClick={() => setActiveTab('dashboard')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md font-display text-[10px] font-bold transition-all ${
-                activeTab === 'dashboard' ? 'text-white shadow-sm' : 'text-theme-text-muted hover:text-theme-text-dark'
+          <div className="flex bg-slate-100 rounded-lg p-1 border border-slate-200">
+            <button
+              onClick={() => setActiveTab('dashboard')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold transition-all ${
+                activeTab === 'dashboard' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900'
               }`}
-              style={activeTab === 'dashboard' ? { backgroundColor: 'var(--theme-primary)' } : {}}>
-              <Activity className="w-3.5 h-3.5" /> DASHBOARD
+            >
+              <Activity className="w-3.5 h-3.5" />
+              <span>Dashboard</span>
             </button>
-            <button onClick={() => setActiveTab('seatmap')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md font-display text-[10px] font-bold transition-all ${
-                activeTab === 'seatmap' ? 'text-white shadow-sm' : 'text-theme-text-muted hover:text-theme-text-dark'
+            <button
+              onClick={() => setActiveTab('seatmap')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold transition-all ${
+                activeTab === 'seatmap' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900'
               }`}
-              style={activeTab === 'seatmap' ? { backgroundColor: 'var(--theme-primary)' } : {}}>
-              <Map className="w-3.5 h-3.5" /> SEAT HEATMAP
+            >
+              <Map className="w-3.5 h-3.5" />
+              <span>Seat Heatmap</span>
             </button>
           </div>
         </div>
@@ -229,27 +234,24 @@ export const OrganizerPage = () => {
 
       {activeTab === 'dashboard' ? (
         <>
-          {/* LIVE FEED */}
           <LiveTicker />
-          {/* BENTO GRID */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
             <div className="lg:col-span-6"><StadiumStatTile index={0} /></div>
             <div className="lg:col-span-3"><GateBarTile index={1} /></div>
             <div className="lg:col-span-2"><SecurityTile index={2} /></div>
             <div className="lg:col-span-1" style={{ minWidth: 0 }}><FacilitiesTile index={3} /></div>
             <div className="lg:col-span-6">
-              <motion.div custom={4} variants={tile} initial="hidden" animate="show" className="glass-panel p-6 pop-card">
+              <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
                 <AIAnalysisPanel />
-              </motion.div>
+              </div>
             </div>
           </div>
         </>
       ) : (
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }}
-          className="glass-panel p-5 pop-card">
+        <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
           <StadiumSeatMap mode="organizer" />
-        </motion.div>
+        </div>
       )}
-    </motion.div>
+    </div>
   );
-};
+};
