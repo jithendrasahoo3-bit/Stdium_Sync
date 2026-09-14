@@ -16,41 +16,7 @@ During major tournaments like the World Cup, 80,000+ fans arrive at a stadium in
 
 I built **StadiumSync** to connect all three sides of a matchday—**Venue Organizers, Concourse Volunteers, and Spectators**—into one synchronized platform powered by real-time telemetry and deterministic routing algorithms.
 
----
-
-## Architecture & Codebase Design
-
-One of the key requirements for this project was ensuring that **less than 10% of the codebase relies on external AI APIs**. When an 80,000-seat stadium is filling up, operations cannot freeze because an LLM rate-limited or hallucinated a gate that doesn't exist.
-
-I designed StadiumSync around **three deterministic in-house TypeScript calculation engines**, keeping the Gemini API strictly as an optional auxiliary assistant:
-
-```
-                      ┌────────────────────────────────────────┐
-                      │      Real-Time Sensor Telemetry        │
-                      │  (Turnstiles, Security, Concourse)     │
-                      └──────────────────┬─────────────────────┘
-                                         │
-                 ┌───────────────────────┼───────────────────────┐
-                 ▼                       ▼                       ▼
-     ┌───────────────────────┐ ┌───────────────────┐ ┌──────────────────────┐
-     │ crowdAnalysisEngine.ts│ │ routingEngine.ts  │ │ translationEngine.ts │
-     │  - Ingress throughput │ │ - Quadrant router │ │ - 8-Lang dictionary  │
-     │  - Bottleneck math    │ │ - Turnstile penalty│ │ - Cultural nuances   │
-     │  - Priority protocols │ │ - Walk times      │ │ - Offline ready      │
-     └───────────┬───────────┘ └─────────┬─────────┘ └──────────┬───────────┘
-                 │                       │                      │
-                 └───────────────────────┼──────────────────────┘
-                                         │
-                                         ▼
-                         ┌───────────────────────────────┐
-                         │   Zustand Store (useAppStore) │
-                         └───────────────┬───────────────┘
-                                         │
-                 ┌───────────────────────┼───────────────────────┐
-                 ▼                       ▼                       ▼
-      [ Organizer Command ]    [ Volunteer Co-Pilot ]   [ Fan Matchday Guide ]
-```
-
+----
 ### 1. Ingress & Crowd Analysis Engine (`src/services/crowdAnalysisEngine.ts`)
 Instead of asking an AI to "guess" crowd situations, this engine runs deterministic math on live turnstile sensor arrays:
 - **Velocity Tracking:** Compares current flow rate against nominal gate capacity.
